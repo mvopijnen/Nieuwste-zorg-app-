@@ -211,7 +211,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50/70 text-slate-900 flex flex-col font-sans">
       
       {/* Top Bar (One-row 3-zone contract) */}
       <Header
@@ -225,8 +225,8 @@ export default function App() {
       {/* Safety & Protocol Banner */}
       <SafetyBanner />
 
-      {/* Main Content Viewport */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 pb-24 md:pb-12">
+      {/* Main Content Viewport with generous white space */}
+      <main className="flex-1 max-w-5xl w-full mx-auto px-5 sm:px-8 py-8 sm:py-10 pb-32 md:pb-20">
         
         {/* CLIENT MODE */}
         {role === 'client' ? (

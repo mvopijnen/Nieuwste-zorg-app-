@@ -1,5 +1,5 @@
 {
-  "name": "PraktijkKompas Zorg & Welzijn",
+  "name": "PraktijkKompas",
   "description": "Interactieve digitale praktijkcoach voor GGZ, LVB- en gehandicaptenzorg: direct inzicht en praktische handelingsperspectieven bij onrust, overprikkeling en gedragsvragen.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

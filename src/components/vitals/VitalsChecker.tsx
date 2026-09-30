@@ -155,36 +155,34 @@ export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ onExportToSbar }) 
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 sm:space-y-10">
       
       {/* Header */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs">
+      <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-[0_4px_25px_rgba(15,23,42,0.03)] border-0">
         <div className="max-w-2xl">
-          <div className="flex items-center gap-2 text-xs font-semibold text-teal-800 mb-1">
-            <Activity className="w-4 h-4 text-teal-600" />
+          <div className="flex items-center gap-2 text-xs font-semibold text-blue-800 mb-2">
+            <Activity className="w-4 h-4 text-blue-600" />
             <span>Klinische Triage & Vitale Functies</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 font-display">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 font-display leading-snug">
             Meetwaarden & Early Warning Invoer
           </h1>
-          <p className="text-slate-600 text-sm mt-1">
+          <p className="text-slate-600 text-sm mt-2 leading-relaxed">
             Vul direct de gemeten parameters in. De app analyseert fysiologische afwijkingen, qSOFA sepsis-criteria en genereert een kant-en-klare SBAR-overdracht.
           </p>
         </div>
 
         {/* Live Urgency Status Banner */}
-        <div className={`mt-5 p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+        <div className={`mt-6 p-5 rounded-2xl border-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
           calculatedUrgency === 'U1'
-            ? 'bg-rose-50 border-rose-300 text-rose-950'
+            ? 'bg-rose-50/90 text-rose-950'
             : calculatedUrgency === 'U2'
-            ? 'bg-amber-50 border-amber-300 text-amber-950'
-            : calculatedUrgency === 'U3'
-            ? 'bg-yellow-50 border-yellow-200 text-yellow-950'
-            : 'bg-emerald-50 border-emerald-200 text-emerald-950'
+            ? 'bg-amber-50/90 text-amber-950'
+            : 'bg-blue-50/70 text-blue-950'
         }`}>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3.5">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white shrink-0 ${
-              calculatedUrgency === 'U1' ? 'bg-rose-600' : calculatedUrgency === 'U2' ? 'bg-amber-600' : calculatedUrgency === 'U3' ? 'bg-yellow-600' : 'bg-emerald-600'
+              calculatedUrgency === 'U1' ? 'bg-rose-600 animate-pulse' : calculatedUrgency === 'U2' ? 'bg-amber-600' : 'bg-blue-600'
             }`}>
               {calculatedUrgency}
             </div>
@@ -206,10 +204,10 @@ export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ onExportToSbar }) 
             </div>
           </div>
 
-          <div className="flex items-center gap-2 self-end sm:self-auto">
+          <div className="flex items-center gap-3 self-end sm:self-auto">
             <button
               onClick={handleCopySummary}
-              className="py-1.5 px-3 bg-white/80 hover:bg-white text-slate-800 border rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="py-2 px-3.5 bg-white/90 hover:bg-white text-slate-800 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
             >
               <ClipboardCopy className="w-3.5 h-3.5" />
               <span>{copied ? 'Gekopieerd!' : 'Kopieer meetreeks'}</span>
@@ -217,7 +215,7 @@ export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ onExportToSbar }) 
             {onExportToSbar && (
               <button
                 onClick={handleExport}
-                className="py-1.5 px-3.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
               >
                 <span>Naar SBAR overdracht</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -246,13 +244,13 @@ export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ onExportToSbar }) 
       )}
 
       {/* Inputs Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         
         {/* Bloeddruk */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2">
+        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_rgba(15,23,42,0.03)] border-0 space-y-3">
           <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
             <span className="flex items-center gap-1.5 text-slate-800">
-              <Activity className="w-4 h-4 text-teal-600" />
+              <Activity className="w-4 h-4 text-blue-600" />
               <span>Bloeddruk (RR)</span>
             </span>
             <span>mmHg</span>
@@ -263,7 +261,7 @@ export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ onExportToSbar }) 
               placeholder="Syst"
               value={systolic}
               onChange={(e) => setSystolic(e.target.value)}
-              className="w-1/2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600/20"
+              className="w-1/2 p-3 bg-slate-50/90 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 shadow-xs"
             />
             <span className="text-slate-400 font-bold">/</span>
             <input
@@ -271,14 +269,14 @@ export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ onExportToSbar }) 
               placeholder="Diast"
               value={diastolic}
               onChange={(e) => setDiastolic(e.target.value)}
-              className="w-1/2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600/20"
+              className="w-1/2 p-3 bg-slate-50/90 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 shadow-xs"
             />
           </div>
           <p className="text-[11px] text-slate-400">Normaal: 120/80 (Syst: 110-140)</p>
         </div>
 
         {/* Pols / Hartfrequentie */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2">
+        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_rgba(15,23,42,0.03)] border-0 space-y-3">
           <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
             <span className="flex items-center gap-1.5 text-slate-800">
               <Heart className="w-4 h-4 text-rose-500" />
@@ -291,13 +289,13 @@ export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ onExportToSbar }) 
             placeholder="Bijv. 76"
             value={heartRate}
             onChange={(e) => setHeartRate(e.target.value)}
-            className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600/20"
+            className="w-full p-3 bg-slate-50/90 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 shadow-xs"
           />
           <p className="text-[11px] text-slate-400">Normaal rust: 60 - 95 slagen/min</p>
         </div>
 
         {/* Zuurstofsaturatie */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2">
+        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_rgba(15,23,42,0.03)] border-0 space-y-3">
           <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
             <span className="flex items-center gap-1.5 text-slate-800">
               <Wind className="w-4 h-4 text-blue-500" />
@@ -310,13 +308,13 @@ export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ onExportToSbar }) 
             placeholder="Bijv. 97"
             value={spO2}
             onChange={(e) => setSpO2(e.target.value)}
-            className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600/20"
+            className="w-full p-3 bg-slate-50/90 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 shadow-xs"
           />
           <p className="text-[11px] text-slate-400">Normaal: ≥ 95% (COPD: 88-92%)</p>
         </div>
 
         {/* Temperatuur */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2">
+        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_rgba(15,23,42,0.03)] border-0 space-y-3">
           <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
             <span className="flex items-center gap-1.5 text-slate-800">
               <Thermometer className="w-4 h-4 text-amber-500" />
@@ -330,16 +328,16 @@ export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ onExportToSbar }) 
             placeholder="Bijv. 37.2"
             value={temperature}
             onChange={(e) => setTemperature(e.target.value)}
-            className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600/20"
+            className="w-full p-3 bg-slate-50/90 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 shadow-xs"
           />
           <p className="text-[11px] text-slate-400">Normaal: 36.5 - 37.5°C (Koorts: ≥ 38.0)</p>
         </div>
 
         {/* Bloedglucose */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2">
+        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_rgba(15,23,42,0.03)] border-0 space-y-3">
           <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
             <span className="flex items-center gap-1.5 text-slate-800">
-              <Droplet className="w-4 h-4 text-purple-500" />
+              <Droplet className="w-4 h-4 text-blue-500" />
               <span>Bloedglucose</span>
             </span>
             <span>mmol/L</span>
@@ -350,16 +348,16 @@ export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ onExportToSbar }) 
             placeholder="Bijv. 5.6"
             value={glucose}
             onChange={(e) => setGlucose(e.target.value)}
-            className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600/20"
+            className="w-full p-3 bg-slate-50/90 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 shadow-xs"
           />
           <p className="text-[11px] text-slate-400">Nuchter: 4.0 - 7.0 (Hypo: &lt; 3.5)</p>
         </div>
 
         {/* Ademfrequentie */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2">
+        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_rgba(15,23,42,0.03)] border-0 space-y-3">
           <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
             <span className="flex items-center gap-1.5 text-slate-800">
-              <Wind className="w-4 h-4 text-teal-600" />
+              <Wind className="w-4 h-4 text-blue-600" />
               <span>Ademfrequentie</span>
             </span>
             <span>/minuut</span>
@@ -369,18 +367,18 @@ export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ onExportToSbar }) 
             placeholder="Bijv. 14"
             value={respRate}
             onChange={(e) => setRespRate(e.target.value)}
-            className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600/20"
+            className="w-full p-3 bg-slate-50/90 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 shadow-xs"
           />
           <p className="text-[11px] text-slate-400">Normaal: 12 - 18 /min (qSOFA: ≥ 22)</p>
         </div>
 
         {/* Bewustzijn (AVPU) */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2 sm:col-span-2">
+        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_rgba(15,23,42,0.03)] border-0 space-y-3 sm:col-span-2">
           <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
             <span className="text-slate-800">Bewustzijnsschaal (AVPU)</span>
             <span>Neurologische status</span>
           </div>
-          <div className="grid grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-4 gap-2">
             {[
               { id: 'A', label: 'Alert (Helder)' },
               { id: 'V', label: 'Voice (Spraak)' },
@@ -391,16 +389,16 @@ export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ onExportToSbar }) 
                 key={item.id}
                 type="button"
                 onClick={() => setAvpu(item.id as 'A' | 'V' | 'P' | 'U')}
-                className={`py-2 px-1 text-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                className={`py-2.5 px-1.5 text-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   avpu === item.id
                     ? item.id === 'A'
-                      ? 'bg-emerald-600 text-white shadow-xs'
+                      ? 'bg-blue-600 text-white shadow-xs'
                       : 'bg-rose-600 text-white shadow-xs'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    : 'bg-slate-100/80 text-slate-700 hover:bg-slate-200/70'
                 }`}
               >
                 {item.id}
-                <span className="hidden sm:block text-[10px] font-normal opacity-90 truncate">{item.label}</span>
+                <span className="hidden sm:block text-[10px] font-normal opacity-90 truncate mt-0.5">{item.label}</span>
               </button>
             ))}
           </div>
@@ -409,20 +407,20 @@ export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ onExportToSbar }) 
       </div>
 
       {/* SBAR Output Box */}
-      <div className="bg-slate-900 text-white rounded-3xl p-6 shadow-md space-y-3">
+      <div className="bg-slate-900 text-white rounded-3xl p-8 shadow-[0_4px_25px_rgba(15,23,42,0.03)] border-0 space-y-4">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-teal-400 uppercase tracking-wide">
+          <span className="text-xs font-semibold text-blue-300 uppercase tracking-wide">
             Klinische Gegevensoverdracht
           </span>
           <button
             onClick={handleCopySummary}
-            className="text-xs text-slate-300 hover:text-white flex items-center gap-1 font-semibold"
+            className="text-xs text-slate-300 hover:text-white flex items-center gap-1.5 font-semibold cursor-pointer transition-colors"
           >
             <ClipboardCopy className="w-3.5 h-3.5" />
             <span>{copied ? 'Gekopieerd!' : 'Kopieer'}</span>
           </button>
         </div>
-        <p className="font-mono text-xs sm:text-sm text-teal-100/90 leading-relaxed bg-slate-800/80 p-3.5 rounded-2xl border border-slate-700">
+        <p className="font-mono text-xs sm:text-sm text-blue-100/90 leading-relaxed bg-slate-800/80 p-4 rounded-2xl border-0">
           {vitalsSummary}
         </p>
       </div>

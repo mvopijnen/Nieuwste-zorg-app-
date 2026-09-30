@@ -22,8 +22,8 @@ export const SafetyBanner: React.FC = () => {
   if (dismissed) return null;
 
   return (
-    <div className="bg-blue-50/60 border-b border-blue-100 text-[11px] text-slate-600 transition-all">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-1.5 flex items-center justify-between gap-3">
+    <div className="bg-blue-50/50 border-b border-blue-100/50 text-[11px] text-slate-600 transition-all">
+      <div className="max-w-5xl mx-auto px-5 sm:px-8 py-2 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
           <p className="line-clamp-1">

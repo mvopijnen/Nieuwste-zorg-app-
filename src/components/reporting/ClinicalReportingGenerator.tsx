@@ -133,28 +133,28 @@ ${timeE}
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 sm:space-y-10">
       
       {/* Header */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs">
+      <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-[0_4px_25px_rgba(15,23,42,0.03)] border-0">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-teal-800 mb-1">
-              <FileText className="w-4 h-4 text-teal-600" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-blue-800 mb-2">
+              <FileText className="w-4 h-4 text-blue-600" />
               <span>Professionele Dossier- & Overdrachtsmodule</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 font-display">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 font-display leading-snug">
               Rapportage: SBAR, SOAP & TIME
             </h1>
-            <p className="text-slate-600 text-sm mt-1 max-w-xl">
+            <p className="text-slate-600 text-sm mt-2 max-w-xl leading-relaxed">
               Gestructureerd communiceren voorkomt medische missers. Lees de SBAR direct telefonisch voor aan de arts, of kopieer de SOAP in één klik naar het ECD.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <button
               onClick={handleCopyCurrent}
-              className="py-2.5 px-4 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl text-xs flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
+              className="py-2.5 px-5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-xs flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
             >
               <ClipboardCopy className="w-4 h-4" />
               <span>{copied ? 'Gekopieerd naar klembord!' : '1-Klik Kopiëren'}</span>
@@ -163,7 +163,7 @@ ${timeE}
         </div>
 
         {/* Tab selection */}
-        <div className="mt-6 flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200 max-w-md">
+        <div className="mt-8 flex items-center gap-1.5 p-1.5 bg-slate-100/80 rounded-2xl max-w-md shadow-2xs">
           <button
             onClick={() => setActiveTab('sbar')}
             className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
@@ -198,55 +198,55 @@ ${timeE}
       </div>
 
       {/* Basic Client Meta Strip */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+      <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_rgba(15,23,42,0.03)] border-0 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
         <div>
-          <label className="font-semibold text-slate-700 block mb-1">Naam cliënt:</label>
+          <label className="font-semibold text-slate-700 block mb-1.5">Naam cliënt:</label>
           <input
             type="text"
             value={clientName}
             onChange={(e) => setClientName(e.target.value)}
-            className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 font-medium"
+            className="w-full p-2.5 bg-slate-50/90 rounded-xl text-slate-900 font-medium border-0 shadow-xs focus:bg-white"
           />
         </div>
         <div>
-          <label className="font-semibold text-slate-700 block mb-1">Geboortedatum:</label>
+          <label className="font-semibold text-slate-700 block mb-1.5">Geboortedatum:</label>
           <input
             type="text"
             value={dob}
             onChange={(e) => setDob(e.target.value)}
-            className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 font-medium"
+            className="w-full p-2.5 bg-slate-50/90 rounded-xl text-slate-900 font-medium border-0 shadow-xs focus:bg-white"
           />
         </div>
         <div>
-          <label className="font-semibold text-slate-700 block mb-1">Afdeling / Woning:</label>
+          <label className="font-semibold text-slate-700 block mb-1.5">Afdeling / Woning:</label>
           <input
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 font-medium"
+            className="w-full p-2.5 bg-slate-50/90 rounded-xl text-slate-900 font-medium border-0 shadow-xs focus:bg-white"
           />
         </div>
       </div>
 
       {/* SBAR TAB CONTENT */}
       {activeTab === 'sbar' && (
-        <div className="space-y-4">
+        <div className="space-y-6">
           
-          <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center justify-between text-xs text-rose-900">
+          <div className="p-5 bg-rose-50/80 rounded-2xl border-0 flex items-center justify-between text-xs text-rose-900 shadow-2xs">
             <span className="font-semibold">
               Tip voor 03:00 uur: Blijf rustig, spreek duidelijk in de telefoon en noem direct je Assessment en Reanimatiebeleid!
             </span>
-            <span className="font-bold uppercase bg-rose-200 px-2 py-0.5 rounded">
+            <span className="font-bold uppercase bg-white/80 px-2.5 py-1 rounded-md shadow-2xs">
               Urgentie {initialUrgency}
             </span>
           </div>
 
-          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-4">
+          <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-[0_4px_25px_rgba(15,23,42,0.03)] border-0 space-y-6">
             
             {/* S */}
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="w-6 h-6 rounded-md bg-teal-600 text-white font-bold text-xs flex items-center justify-center">S</span>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-6 h-6 rounded-md bg-blue-600 text-white font-bold text-xs flex items-center justify-center">S</span>
                 <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">
                   Situation (Wat is het acute probleem op dit moment?)
                 </label>
@@ -255,14 +255,14 @@ ${timeE}
                 rows={2}
                 value={situation}
                 onChange={(e) => setSituation(e.target.value)}
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs leading-relaxed focus:bg-white"
+                className="w-full p-3.5 bg-slate-50/90 rounded-xl text-xs leading-relaxed border-0 shadow-xs focus:bg-white"
               />
             </div>
 
             {/* B */}
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="w-6 h-6 rounded-md bg-teal-600 text-white font-bold text-xs flex items-center justify-center">B</span>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-6 h-6 rounded-md bg-blue-600 text-white font-bold text-xs flex items-center justify-center">B</span>
                 <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">
                   Background (Relevante voorgeschiedenis, allergieën & behandelbeperkingen)
                 </label>
@@ -271,14 +271,14 @@ ${timeE}
                 rows={2}
                 value={background}
                 onChange={(e) => setBackground(e.target.value)}
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs leading-relaxed focus:bg-white"
+                className="w-full p-3.5 bg-slate-50/90 rounded-xl text-xs leading-relaxed border-0 shadow-xs focus:bg-white"
               />
             </div>
 
             {/* A */}
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="w-6 h-6 rounded-md bg-teal-600 text-white font-bold text-xs flex items-center justify-center">A</span>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-6 h-6 rounded-md bg-blue-600 text-white font-bold text-xs flex items-center justify-center">A</span>
                 <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">
                   Assessment (Vitale functies, meetwaarden & wat zie/denk jij?)
                 </label>
@@ -287,14 +287,14 @@ ${timeE}
                 rows={3}
                 value={assessment}
                 onChange={(e) => setAssessment(e.target.value)}
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs leading-relaxed focus:bg-white font-mono"
+                className="w-full p-3.5 bg-slate-50/90 rounded-xl text-xs leading-relaxed border-0 shadow-xs focus:bg-white font-mono"
               />
             </div>
 
             {/* R */}
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="w-6 h-6 rounded-md bg-teal-600 text-white font-bold text-xs flex items-center justify-center">R</span>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-6 h-6 rounded-md bg-blue-600 text-white font-bold text-xs flex items-center justify-center">R</span>
                 <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">
                   Recommendation (Wat verwacht je concreet van de arts?)
                 </label>
@@ -303,27 +303,27 @@ ${timeE}
                 rows={2}
                 value={recommendation}
                 onChange={(e) => setRecommendation(e.target.value)}
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs leading-relaxed focus:bg-white"
+                className="w-full p-3.5 bg-slate-50/90 rounded-xl text-xs leading-relaxed border-0 shadow-xs focus:bg-white"
               />
             </div>
 
           </div>
 
           {/* Formatted Preview Box */}
-          <div className="bg-slate-900 text-white rounded-3xl p-6 shadow-md space-y-3">
+          <div className="bg-slate-900 text-white rounded-3xl p-8 shadow-[0_4px_25px_rgba(15,23,42,0.03)] border-0 space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-teal-400 uppercase tracking-wide">
+              <span className="text-xs font-semibold text-blue-300 uppercase tracking-wide">
                 Gereed om voor te lezen aan de dienstdoende arts:
               </span>
               <button
                 onClick={handleCopyCurrent}
-                className="text-xs font-semibold text-teal-300 hover:text-white flex items-center gap-1"
+                className="text-xs font-semibold text-blue-300 hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <ClipboardCopy className="w-3.5 h-3.5" />
                 <span>{copied ? 'Gekopieerd!' : 'Kopieer SBAR'}</span>
               </button>
             </div>
-            <pre className="font-mono text-xs text-teal-100 whitespace-pre-wrap bg-slate-800/80 p-4 rounded-2xl border border-slate-700 leading-relaxed">
+            <pre className="font-mono text-xs text-blue-100/90 whitespace-pre-wrap bg-slate-800/80 p-5 rounded-2xl border-0 leading-relaxed">
               {buildCompleteSbarText()}
             </pre>
           </div>
@@ -333,46 +333,46 @@ ${timeE}
 
       {/* SOAP TAB CONTENT */}
       {activeTab === 'soap' && (
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-4">
+        <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-[0_4px_25px_rgba(15,23,42,0.03)] border-0 space-y-6">
           
           <div>
-            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide block mb-1">
+            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide block mb-2">
               S - Subjectief (Wat zegt de cliënt/naaste?)
             </label>
             <textarea
               rows={2}
               value={soapS}
               onChange={(e) => setSoapS(e.target.value)}
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+              className="w-full p-3.5 bg-slate-50/90 rounded-xl text-xs border-0 shadow-xs focus:bg-white"
             />
           </div>
 
           <div>
-            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide block mb-1">
+            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide block mb-2">
               O - Objectief (Wat observeer jij? Meetwaarden, wonden, gedrag)
             </label>
             <textarea
               rows={2}
               value={soapO}
               onChange={(e) => setSoapO(e.target.value)}
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+              className="w-full p-3.5 bg-slate-50/90 rounded-xl text-xs border-0 shadow-xs focus:bg-white"
             />
           </div>
 
           <div>
-            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide block mb-1">
+            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide block mb-2">
               A - Analyse (Verpleegkundige duiding / hypothesen)
             </label>
             <textarea
               rows={2}
               value={soapA}
               onChange={(e) => setSoapA(e.target.value)}
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+              className="w-full p-3.5 bg-slate-50/90 rounded-xl text-xs border-0 shadow-xs focus:bg-white"
             />
           </div>
 
           <div>
-            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide block mb-1">
+            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide block mb-2">
               P - Plan (Gemaakte afspraken, controles, opvolging)
             </label>
             <textarea
@@ -398,60 +398,60 @@ ${timeE}
 
       {/* TIME TAB CONTENT */}
       {activeTab === 'time' && (
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-4">
+        <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-[0_4px_25px_rgba(15,23,42,0.03)] border-0 space-y-6">
           
           <div>
-            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide block mb-1">
+            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide block mb-2">
               T - Tissue (Weefsel: zwart/necrose, geel/fibrine, rood/granulatie, roze/epitheel)
             </label>
             <textarea
               rows={2}
               value={timeT}
               onChange={(e) => setTimeT(e.target.value)}
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+              className="w-full p-3.5 bg-slate-50/90 rounded-xl text-xs border-0 shadow-xs focus:bg-white"
             />
           </div>
 
           <div>
-            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide block mb-1">
+            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide block mb-2">
               I - Infection (Infectie: roodheid, warmte, oedeem, pijn, geur, koorts)
             </label>
             <textarea
               rows={2}
               value={timeI}
               onChange={(e) => setTimeI(e.target.value)}
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+              className="w-full p-3.5 bg-slate-50/90 rounded-xl text-xs border-0 shadow-xs focus:bg-white"
             />
           </div>
 
           <div>
-            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide block mb-1">
+            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide block mb-2">
               M - Moisture (Vochtbalans: te droog, vochtig, verweking/maceratie)
             </label>
             <textarea
               rows={2}
               value={timeM}
               onChange={(e) => setTimeM(e.target.value)}
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+              className="w-full p-3.5 bg-slate-50/90 rounded-xl text-xs border-0 shadow-xs focus:bg-white"
             />
           </div>
 
           <div>
-            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide block mb-1">
+            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide block mb-2">
               E - Edge (Wondrand: gaaf, ondermijnd, opgeworpen, eelt)
             </label>
             <textarea
               rows={2}
               value={timeE}
               onChange={(e) => setTimeE(e.target.value)}
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+              className="w-full p-3.5 bg-slate-50/90 rounded-xl text-xs border-0 shadow-xs focus:bg-white"
             />
           </div>
 
           <div className="pt-2">
             <button
               onClick={handleCopyCurrent}
-              className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer transition-colors"
             >
               <ClipboardCopy className="w-4 h-4" />
               <span>{copied ? 'Gekopieerd!' : 'Kopieer TIME Wondverslag'}</span>
