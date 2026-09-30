@@ -12,14 +12,18 @@ import {
   ShieldAlert,
   Info
 } from 'lucide-react';
-import { VitalParameters, UrgencyLevel } from '../../types';
+import { VitalParameters, UrgencyLevel, ClinicalDecisionTrace } from '../../types';
 import { VITAL_SIGNS_THRESHOLDS } from '../../data/somaticTriage';
 
 interface VitalsCheckerProps {
   onExportToSbar?: (vitals: VitalParameters, summaryText: string, calculatedUrgency: UrgencyLevel) => void;
+  isStudentMode?: boolean;
 }
 
-export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ onExportToSbar }) => {
+export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ 
+  onExportToSbar,
+  isStudentMode = false
+}) => {
   const [systolic, setSystolic] = useState<string>('');
   const [diastolic, setDiastolic] = useState<string>('');
   const [heartRate, setHeartRate] = useState<string>('');
@@ -30,6 +34,7 @@ export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ onExportToSbar }) 
   const [avpu, setAvpu] = useState<'A' | 'V' | 'P' | 'U'>('A');
 
   const [copied, setCopied] = useState(false);
+  const [showTrace, setShowTrace] = useState(false);
 
   // Parse values
   const sysNum = parseFloat(systolic);
@@ -222,6 +227,133 @@ export const VitalsChecker: React.FC<VitalsCheckerProps> = ({ onExportToSbar }) 
               </button>
             )}
           </div>
+        </div>
+
+        {/* Student Test Scenario Loader */}
+        {isStudentMode && (
+          <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-slate-500 font-medium">Oefenscenario's:</span>
+            <button
+              type="button"
+              onClick={() => {
+                setSystolic('80');
+                setDiastolic('50');
+                setHeartRate('135');
+                setSpO2('86');
+                setTemperature('39.4');
+                setGlucose('6.2');
+                setRespRate('28');
+                setAvpu('V');
+              }}
+              className="px-2.5 py-1 bg-rose-50 text-rose-800 rounded-lg font-semibold hover:bg-rose-100 transition-colors cursor-pointer"
+            >
+              Laad septische shock (U1)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSystolic('125');
+                setDiastolic('80');
+                setHeartRate('72');
+                setSpO2('98');
+                setTemperature('36.8');
+                setGlucose('5.5');
+                setRespRate('14');
+                setAvpu('A');
+              }}
+              className="px-2.5 py-1 bg-emerald-50 text-emerald-800 rounded-lg font-semibold hover:bg-emerald-100 transition-colors cursor-pointer"
+            >
+              Laad stabiele waarden (U5)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSystolic('');
+                setDiastolic('');
+                setHeartRate('');
+                setSpO2('');
+                setTemperature('');
+                setGlucose('');
+                setRespRate('');
+                setAvpu('A');
+              }}
+              className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg font-semibold hover:bg-slate-200 transition-colors cursor-pointer"
+            >
+              Leegmaken
+            </button>
+          </div>
+        )}
+
+        {/* Onderbouwing van dit advies (ClinicalDecisionTrace) */}
+        <div className="mt-4 pt-3 border-t border-slate-100">
+          <button
+            type="button"
+            onClick={() => setShowTrace(!showTrace)}
+            className="w-full py-2.5 px-4 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <Info className="w-4 h-4 text-blue-600" />
+              <span>Onderbouwing van dit advies</span>
+            </div>
+            <span className="text-blue-600 text-xs">
+              {showTrace ? 'Inklappen' : 'Toon beslisregel & afkapwaarden'}
+            </span>
+          </button>
+
+          {showTrace && (() => {
+            const decisionTrace: ClinicalDecisionTrace = {
+              urgency: calculatedUrgency,
+              sourceOrganization: 'V&VN / NHG (Vitale Functies, NEWS2 & qSOFA)',
+              guidelineTitle: 'Handreiking Vitale Functies & Sepsis Herkenning',
+              versionOrYear: 'In validatie',
+              appliedDecisionRule:
+                calculatedUrgency === 'U1'
+                  ? 'Aanwezigheid van kritieke grenswaarde (Systolisch ≤ 85 mmHg, SpO2 < 88%, Pols ≤ 40 bpm, AF ≥ 25 of AVPU niet alert) activeert direct urgentieklasse U1.'
+                  : calculatedUrgency === 'U2'
+                  ? 'Aanwezigheid van ernstig afwijkende meetwaarden vereist fysieke artsbeoordeling binnen 1 uur (U2).'
+                  : calculatedUrgency === 'U3'
+                  ? 'Afwijkende parameters (bijv. koorts of lichte tachycardie) vereisen overleg binnen enkele uren (U3).'
+                  : 'Alle ingevulde parameters vallen binnen veilige referentiewaarden voor volwassenen.',
+              triggeringData:
+                criticalAlerts.length > 0 || warningAlerts.length > 0
+                  ? [...criticalAlerts, ...warningAlerts]
+                  : ['Alle gemeten parameters binnen normale fysiologische grenzen']
+            };
+
+            return (
+              <div className="mt-3 p-5 bg-slate-50/80 rounded-2xl border-0 space-y-3 text-xs text-slate-700 animate-in fade-in">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="p-3 bg-white rounded-xl shadow-2xs">
+                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Bronorganisatie:</span>
+                    <span className="font-bold text-slate-900">{decisionTrace.sourceOrganization}</span>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl shadow-2xs">
+                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Richtlijn:</span>
+                    <span className="font-bold text-slate-900">{decisionTrace.guidelineTitle}</span>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl shadow-2xs">
+                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Status:</span>
+                    <span className="font-bold text-slate-900">{decisionTrace.versionOrYear}</span>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl shadow-2xs">
+                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Beslisregel:</span>
+                    <span className="font-bold text-slate-900">{decisionTrace.appliedDecisionRule}</span>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-white rounded-xl shadow-2xs space-y-1">
+                  <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">
+                    Geactiveerd door meetwaarden (Triggering data):
+                  </span>
+                  <ul className="list-disc pl-4 space-y-0.5 text-slate-800">
+                    {decisionTrace.triggeringData.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
 

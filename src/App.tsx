@@ -321,6 +321,7 @@ export default function App() {
                     onExportAbcdeToSbar={handleAbcdeExportToSbar}
                     onExportVitalsToSbar={handleVitalsExportToSbar}
                     initialSubTab={activeTab === 'abcde' ? 'abcde' : activeTab === 'vitals' ? 'vitals' : 'triage'}
+                    isStudentMode={role === 'student'}
                   />
                 )}
 

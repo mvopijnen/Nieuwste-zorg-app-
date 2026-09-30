@@ -3,7 +3,6 @@ import {
   GraduationCap, 
   ArrowRight, 
   CheckCircle2, 
-  AlertTriangle, 
   Sparkles, 
   RotateCcw, 
   BookOpen, 
@@ -11,11 +10,11 @@ import {
   TrendingDown, 
   TrendingUp, 
   UserCheck, 
-  HelpCircle,
-  Eye,
-  Check,
-  ChevronRight,
-  ShieldAlert
+  HelpCircle, 
+  Check, 
+  ChevronRight, 
+  AlertCircle,
+  Lightbulb
 } from 'lucide-react';
 import { CASE_STUDIES } from '../../data/cases';
 import { CaseStudy, CaseOption, UserProgressState } from '../../types';
@@ -37,61 +36,104 @@ export const StudentModeView: React.FC<StudentModeViewProps> = ({
   const [selectedCaseIndex, setSelectedCaseIndex] = useState(0);
   const currentCase: CaseStudy = CASE_STUDIES[selectedCaseIndex] || CASE_STUDIES[0];
 
-  // Clinical reasoning workflow state
+  // 5-Fasen Klinisch Redeneermodel State
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [selectedSignals, setSelectedSignals] = useState<string[]>([]);
-  const [selectedHypothesis, setSelectedHypothesis] = useState<string | null>(null);
+  const [selectedSignalIds, setSelectedSignalIds] = useState<string[]>([]);
+  const [selectedHypothesisIds, setSelectedHypothesisIds] = useState<string[]>([]);
+  const [primaryHypothesisId, setPrimaryHypothesisId] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState<CaseOption | null>(null);
   const [studentNotes, setStudentNotes] = useState<string>('');
   const [reflectionAnswer, setReflectionAnswer] = useState<string>('');
-  const [awardedXp, setAwardedXp] = useState<number>(0);
-  const [isCompleted, setIsCompleted] = useState<boolean>(false);
+  
+  // Track completion per case
+  const isAlreadyCompleted = progress.completedCases.includes(currentCase.id);
+  const [isCompletedInSession, setIsCompletedInSession] = useState<boolean>(isAlreadyCompleted);
+  const [sessionAwardedXp, setSessionAwardedXp] = useState<number>(0);
 
-  // Observable signals list for the current case
-  const availableSignals = [
-    'Loopt al 20 minuten met grote passen onrustig door de gang',
-    'Houdt af en toe kort de hand tegen het linkeroor',
-    'Snauwt fel en defensief naar een medebewoner',
-    'Achtergrondmuziek en kookgeluiden in de nabije huiskamer',
-    'Praat steeds harder binnensmonds tegen zichzelf',
-    'Is rustig en zoekt direct ontspanning'
-  ];
+  const availableSignals = currentCase.observableSignals || [];
+  const availableHypotheses = currentCase.hypotheses || [];
 
-  // Hypotheses
-  const availableHypotheses = [
-    { id: 'hyp-1', label: 'Sensorische overprikkeling (geluid, drukte) bij beperkt werkgeheugen', isCorrect: true },
-    { id: 'hyp-2', label: 'Mogelijk lichamelijk ongemak of oorpijn', isCorrect: true },
-    { id: 'hyp-3', label: 'Doelbewust manipulatief of antisociaal dwarsliggen', isCorrect: false },
-    { id: 'hyp-4', label: 'Acute psychotische desoriëntatie', isCorrect: false }
-  ];
-
-  const handleToggleSignal = (sig: string) => {
-    if (selectedSignals.includes(sig)) {
-      setSelectedSignals(selectedSignals.filter(s => s !== sig));
+  // Toggle signal selection (minimum 2 required)
+  const handleToggleSignal = (sigId: string) => {
+    if (selectedSignalIds.includes(sigId)) {
+      setSelectedSignalIds(selectedSignalIds.filter(id => id !== sigId));
     } else {
-      setSelectedSignals([...selectedSignals, sig]);
+      setSelectedSignalIds([...selectedSignalIds, sigId]);
     }
   };
 
+  // Toggle hypothesis selection (maximum 2 allowed)
+  const handleToggleHypothesis = (hypId: string) => {
+    if (selectedHypothesisIds.includes(hypId)) {
+      const next = selectedHypothesisIds.filter(id => id !== hypId);
+      setSelectedHypothesisIds(next);
+      if (primaryHypothesisId === hypId) {
+        setPrimaryHypothesisId(next[0] || null);
+      }
+    } else {
+      if (selectedHypothesisIds.length >= 2) {
+        // Replace second or warn
+        const next = [selectedHypothesisIds[0], hypId];
+        setSelectedHypothesisIds(next);
+      } else {
+        const next = [...selectedHypothesisIds, hypId];
+        setSelectedHypothesisIds(next);
+        if (!primaryHypothesisId) {
+          setPrimaryHypothesisId(hypId);
+        }
+      }
+    }
+  };
+
+  // Select intervention (does NOT grant XP here; feedback is provided)
   const handleSelectOption = (opt: CaseOption) => {
     setSelectedOption(opt);
-    const xp = opt.isRecommended ? 50 : 20;
-    setAwardedXp(xp);
+  };
+
+  // Mark full case as completed and award XP only once
+  const handleCompleteFullCase = () => {
+    if (isAlreadyCompleted || isCompletedInSession) {
+      return;
+    }
+    const xpReward = 50;
+    setSessionAwardedXp(xpReward);
+    setIsCompletedInSession(true);
+    
+    // Mark complete and update progress (markCaseComplete handles saving and adding XP once)
+    const updated = StorageService.markCaseComplete(currentCase.id, currentCase.domain, xpReward);
     if (onProgressUpdate) {
-      const updated = StorageService.addXp(xp, `Student simulatie: ${currentCase.title}`, 'case', currentCase.domain);
       onProgressUpdate(updated);
     }
   };
 
   const handleResetFlow = () => {
     setCurrentStep(1);
-    setSelectedSignals([]);
-    setSelectedHypothesis(null);
+    setSelectedSignalIds([]);
+    setSelectedHypothesisIds([]);
+    setPrimaryHypothesisId(null);
     setSelectedOption(null);
     setStudentNotes('');
     setReflectionAnswer('');
-    setIsCompleted(false);
+    setIsCompletedInSession(progress.completedCases.includes(currentCase.id));
+    setSessionAwardedXp(0);
   };
+
+  const handleCaseChange = (idx: number) => {
+    setSelectedCaseIndex(idx);
+    const targetCase = CASE_STUDIES[idx];
+    setCurrentStep(1);
+    setSelectedSignalIds([]);
+    setSelectedHypothesisIds([]);
+    setPrimaryHypothesisId(null);
+    setSelectedOption(null);
+    setStudentNotes('');
+    setReflectionAnswer('');
+    setIsCompletedInSession(targetCase ? progress.completedCases.includes(targetCase.id) : false);
+    setSessionAwardedXp(0);
+  };
+
+  // Signal selection counts
+  const neededSignals = Math.max(0, 2 - selectedSignalIds.length);
 
   return (
     <div className="space-y-8 sm:space-y-10 max-w-4xl mx-auto">
@@ -131,8 +173,8 @@ export const StudentModeView: React.FC<StudentModeViewProps> = ({
           </div>
         </div>
 
-        {/* Fictieve Casus Marker */}
-        <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between gap-3 text-xs text-slate-500">
+        {/* Fictieve Casus Marker & Casus Knoppen */}
+        <div className="mt-6 pt-5 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500">
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold text-[11px]">
               Oefencasus / Simulatie
@@ -140,35 +182,36 @@ export const StudentModeView: React.FC<StudentModeViewProps> = ({
             <span>Uitsluitend fictieve casuïstiek voor educatieve doeleinden.</span>
           </div>
 
-          <div className="flex items-center gap-1.5">
-            {CASE_STUDIES.map((c, idx) => (
-              <button
-                key={c.id}
-                onClick={() => {
-                  setSelectedCaseIndex(idx);
-                  handleResetFlow();
-                }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                  selectedCaseIndex === idx
-                    ? 'bg-blue-600 text-white shadow-2xs'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-              >
-                Casus {idx + 1}
-              </button>
-            ))}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+            {CASE_STUDIES.map((c, idx) => {
+              const isDone = progress.completedCases.includes(c.id);
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => handleCaseChange(idx)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    selectedCaseIndex === idx
+                      ? 'bg-blue-600 text-white shadow-2xs'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
+                >
+                  <span>Casus {idx + 1}</span>
+                  {isDone && <Check className="w-3 h-3 text-emerald-400" />}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* 10-Stappen Klinisch Redeneerproces voor Studenten */}
+      {/* 5-FASEN KLINISCH REDENEERMODEL VOOR STUDENTEN */}
       <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-[0_4px_25px_rgba(15,23,42,0.03)] border-0 space-y-8">
         
         {/* Step Progression Bar */}
         <div className="flex items-center justify-between pb-6 border-b border-slate-100">
           <div className="space-y-1">
             <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
-              Stap {currentStep} van 5 · Klinisch redeneermodel
+              Stap {currentStep} van 5 · 5-fasen klinisch redeneermodel
             </span>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 font-display">
               {currentStep === 1 && '1. Observeer de casus & context'}
@@ -189,7 +232,7 @@ export const StudentModeView: React.FC<StudentModeViewProps> = ({
           </button>
         </div>
 
-        {/* STAP 1: OBSERVEER DE CASUS */}
+        {/* FASE 1: OBSERVEER DE CASUS */}
         {currentStep === 1 && (
           <div className="space-y-6">
             <div className="p-6 bg-blue-50/40 rounded-2xl space-y-3">
@@ -227,21 +270,34 @@ export const StudentModeView: React.FC<StudentModeViewProps> = ({
           </div>
         )}
 
-        {/* STAP 2: SELECTEER SIGNALEN */}
+        {/* FASE 2: SELECTEER SIGNALEN (MINIMAAL 2 VEREIST) */}
         {currentStep === 2 && (
           <div className="space-y-6">
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Lees de observatie zorgvuldig. Selecteer minimaal 2 gedragssignalen of omgevingsfactoren die relevant zijn voor je beoordeling:
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <p className="text-sm text-slate-600 leading-relaxed">
+                Lees de observatie zorgvuldig. Selecteer <strong>minimaal 2 signalen</strong> of omgevingsfactoren die relevant zijn voor je beoordeling:
+              </p>
+              <div className={`text-xs font-semibold px-3 py-1 rounded-lg shrink-0 ${
+                neededSignals === 0 
+                  ? 'bg-emerald-50 text-emerald-800' 
+                  : 'bg-amber-50 text-amber-800'
+              }`}>
+                {neededSignals === 0 
+                  ? `✓ ${selectedSignalIds.length} geselecteerd` 
+                  : neededSignals === 1 
+                  ? 'Selecteer nog 1 signaal' 
+                  : 'Selecteer nog 2 signalen'}
+              </div>
+            </div>
 
             <div className="space-y-3">
-              {availableSignals.map((sig, idx) => {
-                const isChecked = selectedSignals.includes(sig);
+              {availableSignals.map((sig) => {
+                const isChecked = selectedSignalIds.includes(sig.id);
                 return (
                   <button
-                    key={idx}
+                    key={sig.id}
                     type="button"
-                    onClick={() => handleToggleSignal(sig)}
+                    onClick={() => handleToggleSignal(sig.id)}
                     className={`w-full p-4 rounded-xl text-left flex items-start gap-3.5 transition-all cursor-pointer border-0 shadow-2xs ${
                       isChecked
                         ? 'bg-blue-50 ring-2 ring-blue-600 text-blue-950 font-medium'
@@ -253,7 +309,14 @@ export const StudentModeView: React.FC<StudentModeViewProps> = ({
                     }`}>
                       {isChecked && <Check className="w-3.5 h-3.5" />}
                     </div>
-                    <span className="text-xs sm:text-sm">{sig}</span>
+                    <div className="flex-1">
+                      <span className="text-xs sm:text-sm">{sig.label}</span>
+                      {sig.category && (
+                        <span className="ml-2 text-[10px] uppercase font-semibold text-slate-400">
+                          [{sig.category}]
+                        </span>
+                      )}
+                    </div>
                   </button>
                 );
               })}
@@ -268,49 +331,88 @@ export const StudentModeView: React.FC<StudentModeViewProps> = ({
               </button>
 
               <button
-                disabled={selectedSignals.length === 0}
+                disabled={selectedSignalIds.length < 2}
                 onClick={() => setCurrentStep(3)}
                 className={`py-3 px-6 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all ${
-                  selectedSignals.length > 0
+                  selectedSignalIds.length >= 2
                     ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer shadow-xs'
                     : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                 }`}
               >
-                <span>Volgende: Hypothesen vormen ({selectedSignals.length} geselecteerd)</span>
+                <span>
+                  {selectedSignalIds.length >= 2
+                    ? `Volgende: Hypothesen vormen (${selectedSignalIds.length} geselecteerd)`
+                    : neededSignals === 1
+                    ? 'Selecteer nog 1 signaal'
+                    : 'Selecteer nog minimaal 2 signalen'}
+                </span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
         )}
 
-        {/* STAP 3: KIES MOGELIJKE VERKLARINGEN */}
+        {/* FASE 3: HYPOTHESE-DENKEN (MAXIMAAL 2 SELECTEREN) */}
         {currentStep === 3 && (
           <div className="space-y-6">
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Wat is volgens jou de meest aannemelijke onderliggende oorzaak van dit gedrag?
-            </p>
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 mb-1">
+                Welke mogelijke verklaringen verdienen volgens jou aandacht?
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Selecteer maximaal 2 hypothesen. In de praktijk kunnen meerdere verklaringen tegelijk een rol spelen (bijv. sensorische overprikkeling én fysiek ongemak). Deze module stelt geen medische diagnose, maar helpt methodisch nadenken.
+              </p>
+            </div>
 
             <div className="space-y-3">
               {availableHypotheses.map((hyp) => {
-                const isSelected = selectedHypothesis === hyp.id;
+                const isSelected = selectedHypothesisIds.includes(hyp.id);
+                const isPrimary = primaryHypothesisId === hyp.id;
+
                 return (
-                  <button
+                  <div
                     key={hyp.id}
-                    type="button"
-                    onClick={() => setSelectedHypothesis(hyp.id)}
-                    className={`w-full p-4 rounded-xl text-left flex items-start gap-3.5 transition-all cursor-pointer border-0 shadow-2xs ${
+                    className={`w-full p-4 rounded-xl text-left transition-all border-0 shadow-2xs ${
                       isSelected
-                        ? 'bg-blue-50 ring-2 ring-blue-600 text-blue-950 font-medium'
+                        ? 'bg-blue-50 ring-2 ring-blue-600 text-blue-950'
                         : 'bg-slate-50/80 hover:bg-slate-100 text-slate-700'
                     }`}
                   >
-                    <div className={`w-5 h-5 rounded-full mt-0.5 flex items-center justify-center shrink-0 ${
-                      isSelected ? 'bg-blue-600 text-white' : 'bg-white border border-slate-300'
-                    }`}>
-                      {isSelected && <span className="w-2 h-2 rounded-full bg-white" />}
+                    <div className="flex items-start gap-3.5">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleHypothesis(hyp.id)}
+                        className={`w-5 h-5 rounded-md mt-0.5 flex items-center justify-center shrink-0 cursor-pointer ${
+                          isSelected ? 'bg-blue-600 text-white' : 'bg-white border border-slate-300'
+                        }`}
+                      >
+                        {isSelected && <Check className="w-3.5 h-3.5" />}
+                      </button>
+
+                      <div className="flex-1 cursor-pointer" onClick={() => handleToggleHypothesis(hyp.id)}>
+                        <p className="text-xs sm:text-sm font-semibold">{hyp.label}</p>
+                        <p className="text-xs text-slate-500 mt-1 leading-relaxed">{hyp.explanation}</p>
+                      </div>
                     </div>
-                    <span className="text-xs sm:text-sm">{hyp.label}</span>
-                  </button>
+
+                    {/* Primary designation if selected */}
+                    {isSelected && selectedHypothesisIds.length > 1 && (
+                      <div className="mt-3 pt-2 border-t border-blue-200/60 flex items-center justify-between text-xs">
+                        <span className="text-[11px] text-blue-800">
+                          {isPrimary ? '★ Als eerste te onderzoeken' : 'Secundaire hypothese'}
+                        </span>
+                        {!isPrimary && (
+                          <button
+                            type="button"
+                            onClick={() => setPrimaryHypothesisId(hyp.id)}
+                            className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 underline cursor-pointer"
+                          >
+                            Markeer als eerste te onderzoeken
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 );
               })}
             </div>
@@ -324,26 +426,26 @@ export const StudentModeView: React.FC<StudentModeViewProps> = ({
               </button>
 
               <button
-                disabled={!selectedHypothesis}
+                disabled={selectedHypothesisIds.length === 0}
                 onClick={() => setCurrentStep(4)}
                 className={`py-3 px-6 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all ${
-                  selectedHypothesis
+                  selectedHypothesisIds.length > 0
                     ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer shadow-xs'
                     : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                 }`}
               >
-                <span>Volgende: Interventie kiezen</span>
+                <span>Volgende: Interventie kiezen ({selectedHypothesisIds.length} geselecteerd)</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
         )}
 
-        {/* STAP 4: KIES INTERVENTIE */}
+        {/* FASE 4: KIES INTERVENTIE */}
         {currentStep === 4 && (
           <div className="space-y-6">
             <p className="text-sm text-slate-600 leading-relaxed">
-              Hoe handel jij nu als begeleider/verpleegkundige om te de-escaleren? Kies de beste optie:
+              Hoe handel jij nu als begeleider of verpleegkundige om te de-escaleren? Kies de beste optie:
             </p>
 
             <div className="space-y-4">
@@ -395,11 +497,11 @@ export const StudentModeView: React.FC<StudentModeViewProps> = ({
           </div>
         )}
 
-        {/* STAP 5: EFFECT OP CLIËNT, PEDAGOGISCHE FEEDBACK & SBAR OVERDRACHT */}
+        {/* FASE 5: EFFECT OP CLIËNT, LEERFEEDBACK & RAPPORTAGE */}
         {currentStep === 5 && selectedOption && (
           <div className="space-y-8 animate-in fade-in">
             
-            {/* Effect op de spanning */}
+            {/* Effect op spanning */}
             <div className={`p-6 rounded-2xl border-0 space-y-3 ${
               selectedOption.isRecommended
                 ? 'bg-blue-50/80 text-blue-950'
@@ -412,16 +514,25 @@ export const StudentModeView: React.FC<StudentModeViewProps> = ({
                       <TrendingDown className="w-4 h-4 text-blue-600" />
                       <span>Effect op spanning cliënt: Daalt</span>
                     </>
-                  ) : (
+                  ) : selectedOption.effectOnTension === 'stijgt' ? (
                     <>
                       <TrendingUp className="w-4 h-4 text-amber-600" />
                       <span>Effect op spanning cliënt: Stijgt</span>
                     </>
+                  ) : (
+                    <span>Effect op spanning cliënt: Blijft gelijk</span>
                   )}
                 </span>
-                <span className="px-3 py-1 bg-white/90 rounded-lg text-xs font-bold shadow-2xs">
-                  +{awardedXp} XP verdiend!
-                </span>
+                
+                {selectedOption.isRecommended ? (
+                  <span className="px-3 py-1 bg-emerald-100 text-emerald-900 rounded-lg text-xs font-bold shadow-2xs">
+                    Passende professionele keuze
+                  </span>
+                ) : (
+                  <span className="px-3 py-1 bg-amber-100 text-amber-900 rounded-lg text-xs font-bold shadow-2xs">
+                    Minder effectieve keuze
+                  </span>
+                )}
               </div>
 
               <h4 className="text-base font-bold font-display">
@@ -431,6 +542,30 @@ export const StudentModeView: React.FC<StudentModeViewProps> = ({
                 {selectedOption.feedbackReason}
               </p>
             </div>
+
+            {/* Inhoudelijke casus-specifieke leerfeedback */}
+            {currentCase.learningFeedback && (
+              <div className="p-6 bg-blue-50/50 rounded-2xl border-0 space-y-3 text-xs text-blue-950">
+                <div className="flex items-center gap-2 font-bold text-blue-900">
+                  <Lightbulb className="w-4 h-4 text-blue-600" />
+                  <span>Klinische leerfeedback:</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-700">
+                  {currentCase.learningFeedback.signalFeedback && (
+                    <div className="p-3 bg-white rounded-xl shadow-2xs space-y-1">
+                      <span className="font-bold text-slate-900 block text-[11px]">Signalen & Waarneming:</span>
+                      <p className="leading-relaxed">{currentCase.learningFeedback.signalFeedback}</p>
+                    </div>
+                  )}
+                  {currentCase.learningFeedback.hypothesisFeedback && (
+                    <div className="p-3 bg-white rounded-xl shadow-2xs space-y-1">
+                      <span className="font-bold text-slate-900 block text-[11px]">Hypothesevorming:</span>
+                      <p className="leading-relaxed">{currentCase.learningFeedback.hypothesisFeedback}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Diepere theoriekoppeling */}
             <div className="p-6 bg-slate-50/80 rounded-2xl border-0 space-y-2 text-xs text-slate-700">
@@ -442,7 +577,7 @@ export const StudentModeView: React.FC<StudentModeViewProps> = ({
               </p>
             </div>
 
-            {/* Oefen een beknopte SBAR of SOAP overdracht */}
+            {/* Oefen een beknopte SBAR of SOAP overdracht (data-driven) */}
             <div className="bg-slate-50/60 rounded-2xl p-6 border-0 space-y-4">
               <div className="flex items-center justify-between">
                 <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wide">
@@ -453,47 +588,78 @@ export const StudentModeView: React.FC<StudentModeViewProps> = ({
                 </span>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Hoe zou je dit incident en jouw interventie kort overdragen aan je collega van de nachtdienst?
+                Hoe zou je dit incident en jouw interventie kort overdragen aan je collega van de volgende dienst?
               </p>
               <textarea
                 rows={3}
                 value={studentNotes}
                 onChange={(e) => setStudentNotes(e.target.value)}
-                placeholder="Typ hier jouw beknopte SBAR (S: Sam liep onrustig, B: LVB & prikkelgevoelig, A: Overprikkeld door kookgeluid, R: Naar buiten begeleid, rust teruggekeerd)..."
+                placeholder="Schrijf hier jouw overdracht (S: Situatie, B: Achtergrond, A: Beoordeling, R: Aanbeveling)..."
                 className="w-full p-3.5 bg-white rounded-xl text-xs border-0 shadow-xs focus:ring-2 focus:ring-blue-500/20"
               />
 
-              {/* Deskundig voorbeeld */}
+              {/* Deskundig voorbeeld uit currentCase */}
               <div className="pt-2">
                 <span className="text-xs font-semibold text-slate-700 block mb-1">
                   Deskundig voorbeeld ter vergelijking:
                 </span>
                 <p className="font-mono text-[11px] bg-white p-3.5 rounded-xl text-slate-700 leading-relaxed shadow-2xs">
-                  S: Sam (24, LVB) vertoonde om 17:15 verbale agressie en ijsberen in gang. B: Bekend met sensorische overprikkeling tijdens kooktijd. A: Vroegtijdige escalatiefase door huiskamergeluid. R: Rustig schuin aangesproken en naar buiten begeleid. Spanning gedaald, eet rustig op kamer.
+                  {currentCase.expertReportExample}
                 </p>
               </div>
             </div>
 
-            {/* Korte reflectievraag */}
+            {/* Korte reflectievraag uit currentCase */}
             <div className="bg-white rounded-2xl p-6 shadow-xs border-0 space-y-3">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
                 <HelpCircle className="w-4 h-4 text-blue-600" />
                 <span>Korte reflectie voor je portfolio:</span>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Wat zou je morgen vóór 17:00 uur kunnen afspreken met het team om te voorkomen dat Sam opnieuw overprikkeld raakt door kookgeluiden?
+                {currentCase.reflectionQuestion}
               </p>
               <input
                 type="text"
                 value={reflectionAnswer}
                 onChange={(e) => setReflectionAnswer(e.target.value)}
-                placeholder="Bijv: Koptelefoon met ruisonderdrukking aanbieden of eerder laten wandelen..."
+                placeholder="Typ jouw reflectienotitie of afspraak voor morgen..."
                 className="w-full p-3 bg-slate-50/80 rounded-xl text-xs border-0 shadow-xs focus:bg-white"
               />
             </div>
 
-            {/* Einde van de casus */}
-            <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            {/* Afronding & Gecontroleerde XP Toekenning */}
+            <div className="p-6 bg-slate-50/90 rounded-2xl border-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <span className="text-xs font-bold text-slate-900 block">
+                  Voortgangsregistratie
+                </span>
+                <p className="text-xs text-slate-500">
+                  {isAlreadyCompleted || isCompletedInSession
+                    ? 'Deze casus is succesvol voltooid in jouw profiel. XP is eenmalig toegekend.'
+                    : 'Rond deze oefencasus af om 50 XP te ontvangen en op te slaan in je voortgang.'}
+                </p>
+              </div>
+
+              <div>
+                {isAlreadyCompleted || isCompletedInSession ? (
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-900 rounded-xl text-xs font-bold">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-700" />
+                    <span>Casus voltooid ✓</span>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleCompleteFullCase}
+                    className="py-2.5 px-5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    <span>Afronden & 50 XP claimen</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Navigatie aan einde van de casus */}
+            <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <button
                 onClick={handleResetFlow}
                 className="py-2.5 px-4 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
@@ -504,10 +670,7 @@ export const StudentModeView: React.FC<StudentModeViewProps> = ({
               <div className="flex items-center gap-3">
                 {selectedCaseIndex < CASE_STUDIES.length - 1 ? (
                   <button
-                    onClick={() => {
-                      setSelectedCaseIndex(prev => prev + 1);
-                      handleResetFlow();
-                    }}
+                    onClick={() => handleCaseChange(selectedCaseIndex + 1)}
                     className="py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-sm flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
                   >
                     <span>Volgende casus starten</span>

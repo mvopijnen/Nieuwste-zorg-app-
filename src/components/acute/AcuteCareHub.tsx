@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Stethoscope, ShieldAlert, Activity, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Stethoscope, ShieldAlert, Activity, GraduationCap } from 'lucide-react';
 import { SomaticTriageFlow } from '../triage/SomaticTriageFlow';
 import { AbcdeScanner } from '../triage/AbcdeScanner';
 import { VitalsChecker } from '../vitals/VitalsChecker';
@@ -11,6 +11,7 @@ interface AcuteCareHubProps {
   onExportAbcdeToSbar: (abcdeSummary: string, calculatedUrgency: UrgencyLevel) => void;
   onExportVitalsToSbar: (vitals: VitalParameters, summaryText: string, calculatedUrgency: UrgencyLevel) => void;
   initialSubTab?: 'triage' | 'abcde' | 'vitals';
+  isStudentMode?: boolean;
 }
 
 export const AcuteCareHub: React.FC<AcuteCareHubProps> = ({
@@ -18,7 +19,8 @@ export const AcuteCareHub: React.FC<AcuteCareHubProps> = ({
   onOpenSbarFromTriage,
   onExportAbcdeToSbar,
   onExportVitalsToSbar,
-  initialSubTab = 'triage'
+  initialSubTab = 'triage',
+  isStudentMode = false
 }) => {
   const [activeSubTab, setActiveSubTab] = useState<'triage' | 'abcde' | 'vitals'>(initialSubTab);
 
@@ -31,6 +33,28 @@ export const AcuteCareHub: React.FC<AcuteCareHubProps> = ({
   return (
     <div className="space-y-8 sm:space-y-10">
       
+      {/* Student Mode Education Notice */}
+      {isStudentMode && (
+        <div className="bg-amber-50/90 rounded-2xl p-5 border-0 flex items-start gap-3.5 shadow-2xs">
+          <div className="w-8 h-8 rounded-xl bg-amber-200 text-amber-900 flex items-center justify-center shrink-0 mt-0.5">
+            <GraduationCap className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full bg-amber-200 text-amber-900 font-bold text-[11px]">
+                SIMULATIE / OEFENOMGEVING
+              </span>
+              <span className="text-xs font-semibold text-amber-950">
+                Uitsluitend fictieve trainingsdata
+              </span>
+            </div>
+            <p className="text-xs text-amber-900/80 mt-1 leading-relaxed">
+              In een echte situatie: bel direct 112 of waarschuw de dienstdoende arts. In deze oefenomgeving leer je systematisch observeren, vitale parameters duiden en methodisch handelen zonder dat actieve noodlijnen worden gebeld.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Subtab Navigation Bar */}
       <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-[0_4px_25px_rgba(15,23,42,0.03)] border-0">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -67,18 +91,21 @@ export const AcuteCareHub: React.FC<AcuteCareHubProps> = ({
           activeSector={activeSector}
           onBack={() => {}}
           onOpenSbar={onOpenSbarFromTriage}
+          isStudentMode={isStudentMode}
         />
       )}
 
       {activeSubTab === 'abcde' && (
         <AbcdeScanner
           onExportToSbar={onExportAbcdeToSbar}
+          isStudentMode={isStudentMode}
         />
       )}
 
       {activeSubTab === 'vitals' && (
         <VitalsChecker
           onExportToSbar={onExportVitalsToSbar}
+          isStudentMode={isStudentMode}
         />
       )}
 

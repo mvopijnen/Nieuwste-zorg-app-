@@ -12,17 +12,22 @@ import {
   ChevronUp
 } from 'lucide-react';
 import { ABCDE_PROTOCOL } from '../../data/somaticTriage';
-import { AbcdeStep, UrgencyLevel } from '../../types';
+import { AbcdeStep, UrgencyLevel, ClinicalDecisionTrace } from '../../types';
 
 interface AbcdeScannerProps {
   onExportToSbar?: (abcdeSummary: string, calculatedUrgency: UrgencyLevel) => void;
+  isStudentMode?: boolean;
 }
 
-export const AbcdeScanner: React.FC<AbcdeScannerProps> = ({ onExportToSbar }) => {
+export const AbcdeScanner: React.FC<AbcdeScannerProps> = ({ 
+  onExportToSbar,
+  isStudentMode = false 
+}) => {
   const [activeStepLetter, setActiveStepLetter] = useState<'A' | 'B' | 'C' | 'D' | 'E'>('A');
   const [checkedRedFlags, setCheckedRedFlags] = useState<string[]>([]);
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
   const [copied, setCopied] = useState(false);
+  const [showTrace, setShowTrace] = useState(false);
 
   const toggleRedFlag = (flag: string) => {
     if (checkedRedFlags.includes(flag)) {
@@ -132,14 +137,85 @@ Alarmsignalen: ${checkedRedFlags.length > 0 ? checkedRedFlags.join('; ') : 'Geen
           </div>
 
           {hasCriticalRedFlag && (
-            <a
-              href="tel:112"
-              className="py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 shrink-0 shadow-xs transition-colors"
-            >
-              <PhoneCall className="w-3.5 h-3.5" />
-              <span>Bel 112</span>
-            </a>
+            isStudentMode ? (
+              <div className="py-2.5 px-4 bg-rose-100 text-rose-950 rounded-xl text-xs font-bold border border-rose-200 shrink-0 flex items-center gap-2">
+                <PhoneCall className="w-3.5 h-3.5 text-rose-600" />
+                <span>In een echte situatie: bel direct 112</span>
+              </div>
+            ) : (
+              <a
+                href="tel:112"
+                className="py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 shrink-0 shadow-xs transition-colors"
+              >
+                <PhoneCall className="w-3.5 h-3.5" />
+                <span>Bel 112</span>
+              </a>
+            )
           )}
+        </div>
+
+        {/* Onderbouwing van dit advies (ClinicalDecisionTrace) */}
+        <div className="mt-4 pt-3 border-t border-slate-100">
+          <button
+            type="button"
+            onClick={() => setShowTrace(!showTrace)}
+            className="w-full py-2.5 px-4 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <Info className="w-4 h-4 text-blue-600" />
+              <span>Onderbouwing van dit advies</span>
+            </div>
+            <span className="text-blue-600 text-xs">
+              {showTrace ? 'Inklappen' : 'Toon beslisregel & richtlijn'}
+            </span>
+          </button>
+
+          {showTrace && (() => {
+            const decisionTrace: ClinicalDecisionTrace = {
+              urgency: calculatedUrgency,
+              sourceOrganization: 'V&VN / Nederlandse Reanimatie Raad (NRR)',
+              guidelineTitle: 'Landelijke ABCDE-systematiek voor Spoedbeoordeling',
+              versionOrYear: 'In validatie',
+              appliedDecisionRule: hasCriticalRedFlag
+                ? 'Aanwezigheid van 1 of meer rode vlaggen in stap A, B of C activeert direct urgentieklasse U1 (acuut bedreigde vitale functie).'
+                : 'Geen acute alarmsignalen gedetecteerd in de geëvalueerde stappen; vitale stabiliteit vooralsnog gehandhaafd (U3/stabiel).',
+              triggeringData: checkedRedFlags.length > 0 ? checkedRedFlags : ['Geen rode vlaggen aangevinkt']
+            };
+
+            return (
+              <div className="mt-3 p-5 bg-slate-50/80 rounded-2xl border-0 space-y-3 text-xs text-slate-700 animate-in fade-in">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="p-3 bg-white rounded-xl shadow-2xs">
+                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Bronorganisatie:</span>
+                    <span className="font-bold text-slate-900">{decisionTrace.sourceOrganization}</span>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl shadow-2xs">
+                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Richtlijn:</span>
+                    <span className="font-bold text-slate-900">{decisionTrace.guidelineTitle}</span>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl shadow-2xs">
+                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Status:</span>
+                    <span className="font-bold text-slate-900">{decisionTrace.versionOrYear}</span>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl shadow-2xs">
+                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Beslisregel:</span>
+                    <span className="font-bold text-slate-900">{decisionTrace.appliedDecisionRule}</span>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-white rounded-xl shadow-2xs space-y-1">
+                  <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">
+                    Geactiveerd door alarmsignalen:
+                  </span>
+                  <ul className="list-disc pl-4 space-y-0.5 text-slate-800">
+                    {decisionTrace.triggeringData.map((flag, idx) => (
+                      <li key={idx}>{flag}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
 

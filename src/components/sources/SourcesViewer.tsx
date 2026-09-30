@@ -125,7 +125,7 @@ export const SourcesViewer: React.FC = () => {
           <div className="p-5 bg-slate-50/80 rounded-2xl border-0 space-y-1">
             <p className="font-bold text-slate-900">3. Gronding in Nederlandse standaarden</p>
             <p className="text-slate-600 leading-relaxed">
-              Adviezen zijn begrensd tot erkende standaarden van NHG, V&VN, Vilans en NVAVG.
+              De vaste kennis- en beslisregels worden ontwikkeld op basis van erkende Nederlandse richtlijnen en zorgstandaarden.
             </p>
           </div>
         </div>

@@ -171,6 +171,27 @@ export interface CaseOption {
   effectOnTension: 'daalt' | 'stijgt' | 'gelijk';
 }
 
+export interface CaseObservableSignal {
+  id: string;
+  label: string;
+  isKey: boolean;
+  category?: 'lichamelijk' | 'gedrag' | 'omgeving' | 'communicatie';
+}
+
+export interface CaseHypothesis {
+  id: string;
+  label: string;
+  isPlausible: boolean;
+  explanation: string;
+}
+
+export interface CaseLearningFeedback {
+  signalFeedback?: string;
+  hypothesisFeedback?: string;
+  interventionFeedback?: string;
+  evaluationFeedback?: string;
+}
+
 export interface CaseStudy {
   id: string;
   title: string;
@@ -183,6 +204,11 @@ export interface CaseStudy {
   deepDiveNote: string;
   urgencyLevel?: UrgencyLevel;
   guidelineReference?: string;
+  observableSignals: CaseObservableSignal[];
+  hypotheses: CaseHypothesis[];
+  expertReportExample: string;
+  reflectionQuestion: string;
+  learningFeedback?: CaseLearningFeedback;
 }
 
 export interface QuizQuestion {

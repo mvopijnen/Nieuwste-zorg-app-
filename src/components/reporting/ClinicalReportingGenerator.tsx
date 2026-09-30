@@ -255,16 +255,16 @@ ${timeE}
             <span className={`px-2.5 py-0.5 rounded-full font-bold text-[11px] ${
               isDemoData ? 'bg-amber-200 text-amber-900' : 'bg-blue-200 text-blue-900'
             }`}>
-              {isDemoData ? 'DEMO-CASUS, fictieve cliënt' : 'PRAKTIJKMODUS, actieve dienst'}
+              {isDemoData ? 'DEMO-CASUS, fictieve cliënt' : 'LEGE INVOER / TESTOMGEVING'}
             </span>
             <span className="text-xs font-semibold">
-              {isDemoData ? 'Fictieve voorbeelddata geladen' : 'Klaar voor reële cliëntinvoer'}
+              {isDemoData ? 'Fictieve voorbeelddata geladen' : 'Conceptversie'}
             </span>
           </div>
           <p className="text-xs text-slate-600 leading-relaxed">
             {isDemoData 
               ? 'Je bekijkt nu een voorbeeldcasus (COPD, benauwdheid, saturatie 89%). Klik op "Start lege rapportage" om een eigen verslag te schrijven.'
-              : 'Alle velden zijn leeggemaakt voor een actuele registratie of telefonische artsenoverdracht.'}
+              : 'Gebruik in deze conceptversie uitsluitend fictieve of geanonimiseerde cliëntinformatie.'}
           </p>
         </div>
 
@@ -480,14 +480,17 @@ ${timeE}
             />
           </div>
 
-          <div className="pt-2">
+          <div className="pt-2 space-y-2">
             <button
               onClick={handleCopyCurrent}
-              className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer transition-colors"
             >
               <ClipboardCopy className="w-4 h-4" />
-              <span>{copied ? 'Gekopieerd!' : 'Kopieer SOAP tekst voor Nedap Ons / HiX'}</span>
+              <span>{copied ? 'Gekopieerd!' : 'Kopieer SOAP voor ECD'}</span>
             </button>
+            <p className="text-[11px] text-center text-slate-500">
+              Controleer de rapportage volgens het ECD-format en organisatiebeleid.
+            </p>
           </div>
 
         </div>

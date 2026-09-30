@@ -21,13 +21,14 @@ import {
   HelpCircle
 } from 'lucide-react';
 import { SOMATIC_TRIAGE_TOPICS } from '../../data/somaticTriage';
-import { SomaticTriageTopic, UrgencyLevel, CareSector } from '../../types';
+import { SomaticTriageTopic, UrgencyLevel, CareSector, ClinicalDecisionTrace } from '../../types';
 
 interface SomaticTriageFlowProps {
   initialTopic?: SomaticTriageTopic | null;
   onBack: () => void;
   onOpenSbar: (topic: SomaticTriageTopic, urgency: UrgencyLevel, answersSummary: string) => void;
   activeSector: CareSector;
+  isStudentMode?: boolean;
 }
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -43,7 +44,8 @@ export const SomaticTriageFlow: React.FC<SomaticTriageFlowProps> = ({
   initialTopic,
   onBack,
   onOpenSbar,
-  activeSector
+  activeSector,
+  isStudentMode = false
 }) => {
   const [selectedTopic, setSelectedTopic] = useState<SomaticTriageTopic | null>(initialTopic || null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -309,17 +311,24 @@ export const SomaticTriageFlow: React.FC<SomaticTriageFlowProps> = ({
             </p>
 
             {highestUrgency === 'U1' && (
-              <a
-                href="tel:112"
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors"
-              >
-                <PhoneCall className="w-4 h-4" />
-                <span>Bel 112 (Meldkamer)</span>
-              </a>
+              isStudentMode ? (
+                <div className="inline-flex items-center gap-2 px-4 py-2.5 bg-rose-100 text-rose-950 rounded-xl text-xs font-bold border border-rose-200">
+                  <PhoneCall className="w-4 h-4 text-rose-600" />
+                  <span>In een echte situatie: bel direct 112 (Meldkamer)</span>
+                </div>
+              ) : (
+                <a
+                  href="tel:112"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors"
+                >
+                  <PhoneCall className="w-4 h-4" />
+                  <span>Bel 112 (Meldkamer)</span>
+                </a>
+              )
             )}
           </div>
 
-          {/* Waarom krijg ik dit advies? (Herleidbare Redenering per Beslissing) */}
+          {/* Onderbouwing van dit advies (ClinicalDecisionTrace) */}
           <div className="space-y-3">
             <button
               type="button"
@@ -328,62 +337,75 @@ export const SomaticTriageFlow: React.FC<SomaticTriageFlowProps> = ({
             >
               <div className="flex items-center gap-2">
                 <HelpCircle className="w-4 h-4 text-blue-600" />
-                <span>Waarom krijg ik dit advies? (Beslisonderbouwing & bron)</span>
+                <span>Onderbouwing van dit advies</span>
               </div>
               <span className="text-blue-600 underline font-semibold">
-                {showWhyReasoning ? 'Verberg onderbouwing' : 'Toon herleidbare redenering'}
+                {showWhyReasoning ? 'Inklappen' : 'Toon beslisregel & bron'}
               </span>
             </button>
 
-            {showWhyReasoning && (
-              <div className="p-6 bg-slate-50/90 rounded-2xl border-0 space-y-4 text-xs text-slate-800 animate-in fade-in">
-                <div className="border-b border-slate-200/80 pb-3">
-                  <span className="font-bold text-slate-900 block text-sm">
-                    Herleidbare beslislogica voor urgentie: {highestUrgency}
-                  </span>
-                  <p className="text-slate-600 mt-0.5">
-                    De urgentiebepaling is direct herleidbaar naar de triagebeslisboom conform onderstaande Nederlandse zorgstandaard.
-                  </p>
-                </div>
+            {showWhyReasoning && (() => {
+              const decisionTrace: ClinicalDecisionTrace = {
+                urgency: highestUrgency,
+                sourceOrganization: 'Nederlandse Triage Standaard (NTS) / NHG',
+                guidelineTitle: `NTS Ingangsklacht: ${selectedTopic.title}`,
+                versionOrYear: 'In validatie',
+                appliedDecisionRule:
+                  highestUrgency === 'U1'
+                    ? 'Aanwezigheid van acuut alarmsymptoom met vitale bedreiging activeert urgentie U1 (directe inzet ambulance/reanimatieteam).'
+                    : highestUrgency === 'U2'
+                    ? 'Aanwezigheid van ernstig of potentieel levensbedreigend signaal activeert urgentie U2 (fysieke artsbeoordeling binnen 1 uur).'
+                    : highestUrgency === 'U3'
+                    ? 'Dringende klacht zonder directe vitale bedreiging: artsbeoordeling binnen enkele uren (U3).'
+                    : 'Geen alarmsignalen gedetecteerd: veilig verpleegkundig beleid en routinecontrole (U4/U5).',
+                triggeringData: givenAnswers.map(ans => `${ans.question}: ${ans.answerText} (Urgentie: ${ans.urgency})`)
+              };
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="p-3 bg-white rounded-xl shadow-2xs">
-                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Standaard:</span>
-                    <span className="font-bold text-slate-900">Nederlandse Triage Standaard (NTS) / NHG</span>
-                  </div>
-                  <div className="p-3 bg-white rounded-xl shadow-2xs">
-                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Onderwerp:</span>
-                    <span className="font-bold text-slate-900">{selectedTopic.title}</span>
-                  </div>
-                  <div className="p-3 bg-white rounded-xl shadow-2xs">
-                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Versie:</span>
-                    <span className="font-bold text-slate-900">2025 / NHG Standaard & NTS Protocol</span>
-                  </div>
-                  <div className="p-3 bg-white rounded-xl shadow-2xs">
-                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Beslisregel:</span>
-                    <span className="font-bold text-slate-900">
-                      {highestUrgency === 'U1' && 'Acuut bedreigde vitale functies vereisen onmiddellijke inzet van ambulance.'}
-                      {highestUrgency === 'U2' && 'Potentieel bedreigde functies / alarmsignalen vereisen fysieke artsbeoordeling binnen 1 uur.'}
-                      {highestUrgency === 'U3' && 'Dringende klacht zonder directe vitale bedreiging: beoordeling binnen enkele uren.'}
-                      {(highestUrgency === 'U4' || highestUrgency === 'U5') && 'Geen alarmsignalen: veilig verpleegkundig beleid & routinecontrole.'}
+              return (
+                <div className="p-6 bg-slate-50/90 rounded-2xl border-0 space-y-4 text-xs text-slate-800 animate-in fade-in">
+                  <div className="border-b border-slate-200/80 pb-3">
+                    <span className="font-bold text-slate-900 block text-sm">
+                      Klinische beslisonderbouwing voor urgentie: {decisionTrace.urgency}
                     </span>
+                    <p className="text-slate-600 mt-0.5">
+                      Transparante weergave van de vaste beslisregel, bronstandaard en de invoer die deze uitkomst heeft geactiveerd.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="p-3 bg-white rounded-xl shadow-2xs">
+                      <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Bronorganisatie:</span>
+                      <span className="font-bold text-slate-900">{decisionTrace.sourceOrganization}</span>
+                    </div>
+                    <div className="p-3 bg-white rounded-xl shadow-2xs">
+                      <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Richtlijn / Ingangsklacht:</span>
+                      <span className="font-bold text-slate-900">{decisionTrace.guidelineTitle}</span>
+                    </div>
+                    <div className="p-3 bg-white rounded-xl shadow-2xs">
+                      <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Status / Versie:</span>
+                      <span className="font-bold text-slate-900">{decisionTrace.versionOrYear}</span>
+                    </div>
+                    <div className="p-3 bg-white rounded-xl shadow-2xs">
+                      <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Vaste Beslisregel:</span>
+                      <span className="font-bold text-slate-900">{decisionTrace.appliedDecisionRule}</span>
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 bg-white rounded-xl shadow-2xs space-y-1.5">
+                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">
+                      Geactiveerd door jouw invoer (Triggering data):
+                    </span>
+                    <ul className="list-disc pl-4 space-y-1 text-slate-700">
+                      {decisionTrace.triggeringData.map((dataItem, idx) => (
+                        <li key={idx}>
+                          <span className="text-slate-800">{dataItem}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
-
-                <div className="p-3.5 bg-white rounded-xl shadow-2xs space-y-1.5">
-                  <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">
-                    Toegepaste signalen & klinische antwoorden:
-                  </span>
-                  <ul className="list-disc pl-4 space-y-1 text-slate-700">
-                    {givenAnswers.map((ans, idx) => (
-                      <li key={idx}>
-                        <strong>{ans.question}:</strong> <span className="text-blue-900 font-medium">{ans.answerText}</span> (Urgentie: {ans.urgency})
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
 
           {/* Given Answers Audit Trail */}
