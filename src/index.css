@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* ========================================================
+     KLEURENPALET: BLAUW ALS HOOFDKLEUR + ANDERE TINTEN BLAUW
+     Tweede kleur: Neutraal leisteen / zacht grafiet voor rust
+     ======================================================== */
+
+  /* Teal utility mapping naar rustgevend zorgblauw */
+  --color-teal-50: #f0f7ff;
+  --color-teal-100: #e0effe;
+  --color-teal-200: #bae0fd;
+  --color-teal-300: #7cc5fb;
+  --color-teal-400: #38a5f8;
+  --color-teal-500: #0ea5e9;
+  --color-teal-600: #0284c7;
+  --color-teal-700: #0369a1;
+  --color-teal-800: #075985;
+  --color-teal-900: #0c4a6e;
+  --color-teal-950: #082f49;
+
+  /* Emerald utility mapping naar serene blauwtinten */
+  --color-emerald-50: #f0f7ff;
+  --color-emerald-100: #e0effe;
+  --color-emerald-200: #bae0fd;
+  --color-emerald-600: #0284c7;
+  --color-emerald-700: #0369a1;
+  --color-emerald-800: #075985;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+    background-color: #f8fafc;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1.5;
+    background-color: #f8fafc;
+    color: #0f172a;
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-display, button, input, select, textarea {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+  }
+}
+
+/* Zachte lichte canvasachtergrond */
+.bg-slate-50 {
+  background-color: #f8fafc;
+}
+
+/* Rustgevende kaders */
+.border-slate-200 {
+  border-color: #e2e8f0;
+}
+
+.border-slate-100 {
+  border-color: #f1f5f9;
+}
+
+/* Rustige, discrete scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
