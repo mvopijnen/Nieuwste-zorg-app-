@@ -1,4 +1,13 @@
-export type UserRole = 'professional' | 'client';
+export type UserRole = 'professional' | 'student';
+
+export interface ClinicalDecisionTrace {
+  urgency: UrgencyLevel;
+  sourceOrganization: string;
+  guidelineTitle: string;
+  versionOrYear: string;
+  appliedDecisionRule: string;
+  triggeringData: string[];
+}
 
 export type LanguageLevel = 'normal' | 'simple' | 'very_simple' | 'visual';
 

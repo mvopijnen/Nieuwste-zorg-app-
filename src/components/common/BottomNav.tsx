@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Stethoscope, ShieldAlert, FileText, User } from 'lucide-react';
+import { Home, ZapOff, Stethoscope, FileText, GraduationCap } from 'lucide-react';
 
 interface BottomNavProps {
   activeTab: string;
@@ -13,10 +13,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 }) => {
   const tabs = [
     { id: 'home', label: 'Overzicht', icon: Home },
-    { id: 'triage', label: 'Triage', icon: Stethoscope },
-    { id: 'abcde', label: 'ABCDE', icon: ShieldAlert },
-    { id: 'reporting', label: 'SBAR', icon: FileText },
-    { id: 'profile', label: 'Profiel', icon: User }
+    { id: 'situations', label: 'Praktijkcoach', icon: ZapOff },
+    { id: 'acute', label: 'Acute zorg', icon: Stethoscope },
+    { id: 'reporting', label: 'Rapportage', icon: FileText },
+    { id: 'learn', label: 'Leren', icon: GraduationCap }
   ];
 
   return (

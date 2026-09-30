@@ -78,25 +78,25 @@ export const SourcesViewer: React.FC = () => {
     <div className="space-y-6">
       
       {/* Header */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs">
+      <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-[0_4px_25px_rgba(15,23,42,0.03)] border-0">
         <div className="max-w-2xl">
-          <div className="flex items-center gap-2 text-xs font-semibold text-teal-800 mb-1">
-            <ShieldCheck className="w-4 h-4 text-teal-600" />
+          <div className="flex items-center gap-2 text-xs font-semibold text-blue-800 mb-2">
+            <ShieldCheck className="w-4 h-4 text-blue-600" />
             <span>Transparantie, Veiligheid & Herleidbaarheid</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 font-display">
-            Onderliggende Richtlijnen & Verdienmodel
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 font-display leading-snug">
+            Onderliggende Richtlijnen & Ontwikkeling
           </h1>
-          <p className="text-slate-600 text-sm mt-1">
-            ZorgKompas verzint geen medische protocollen. Alle beslisbomen, drempelwaarden en handelingsperspectieven zijn rechtstreeks herleidbaar naar gevalideerde Nederlandse zorgstandaarden.
+          <p className="text-slate-600 text-sm mt-2 leading-relaxed">
+            Gebaseerd op Nederlandse richtlijnen en zorgstandaarden. Inhoudelijke validatie van beslisregels is in ontwikkeling.
           </p>
         </div>
       </div>
 
       {/* AI Veiligheid Guardrails */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-4">
+      <div className="bg-white rounded-3xl shadow-[0_4px_25px_rgba(15,23,42,0.03)] border-0 p-8 sm:p-10 space-y-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
             <Lock className="w-5 h-5" />
           </div>
           <div>
@@ -110,22 +110,22 @@ export const SourcesViewer: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-700">
-          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+          <div className="p-5 bg-slate-50/80 rounded-2xl border-0 space-y-1">
             <p className="font-bold text-slate-900">1. Geen autonome diagnoses</p>
             <p className="text-slate-600 leading-relaxed">
-              De AI stelt nooit diagnoses, maar formuleert hypothesen en verwijst altijd naar fysieke metingen en artsbeoordeling.
+              Het systeem stelt nooit diagnoses, maar formuleert hypothesen en verwijst altijd naar fysieke metingen en artsbeoordeling.
             </p>
           </div>
-          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+          <div className="p-5 bg-slate-50/80 rounded-2xl border-0 space-y-1">
             <p className="font-bold text-slate-900">2. Harde U1-veiligheidscut-offs</p>
             <p className="text-slate-600 leading-relaxed">
               Bij alarmsignalen (SpO2 &lt; 90%, systolisch &lt; 85 mmHg, bewusteloosheid) onderbreekt het systeem de dialoog en toont direct 112/noodprotocollen.
             </p>
           </div>
-          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+          <div className="p-5 bg-slate-50/80 rounded-2xl border-0 space-y-1">
             <p className="font-bold text-slate-900">3. Gronding in Nederlandse standaarden</p>
             <p className="text-slate-600 leading-relaxed">
-              Adviezen zijn begrensd tot gevalideerde protocollen van NHG, V&VN, Vilans en NVAVG.
+              Adviezen zijn begrensd tot erkende standaarden van NHG, V&VN, Vilans en NVAVG.
             </p>
           </div>
         </div>
@@ -139,15 +139,15 @@ export const SourcesViewer: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {sources.map((src, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-slate-200 p-5 space-y-3 flex flex-col justify-between">
+            <div key={i} className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_rgba(15,23,42,0.03)] border-0 space-y-4 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="font-bold text-teal-800 uppercase tracking-wide">{src.type}</span>
+                  <span className="font-bold text-blue-700 uppercase tracking-wide">{src.type}</span>
                 </div>
                 <h3 className="text-base font-bold text-slate-900 font-display">
                   {src.org}
                 </h3>
-                <ul className="mt-3 space-y-1 text-xs text-slate-600 list-disc pl-4">
+                <ul className="mt-3 space-y-1.5 text-xs text-slate-600 list-disc pl-4">
                   {src.items.map((item, idx) => (
                     <li key={idx}>{item}</li>
                   ))}
@@ -156,9 +156,9 @@ export const SourcesViewer: React.FC = () => {
 
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
                 <span className="text-slate-400">Officieel register</span>
-                <span className="text-teal-700 font-semibold flex items-center gap-1">
-                  <span>Gevalideerd</span>
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="text-blue-700 font-semibold flex items-center gap-1.5">
+                  <span>Bron opgenomen</span>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
                 </span>
               </div>
             </div>
@@ -166,39 +166,39 @@ export const SourcesViewer: React.FC = () => {
         </div>
       </div>
 
-      {/* Commercieel B2B Verdienmodel & Terugkerende Waarde */}
-      <div className="bg-gradient-to-br from-slate-900 to-teal-950 text-white rounded-3xl p-6 sm:p-8 shadow-lg space-y-5">
+      {/* B2B Waardepropositie & Roadmap */}
+      <div className="bg-slate-900 text-white rounded-3xl p-8 sm:p-10 shadow-lg space-y-5 border-0">
         <div>
-          <span className="text-xs font-bold text-teal-400 uppercase tracking-wide">
-            B2B Waardepropositie & Verdienmodel
+          <span className="text-xs font-bold text-blue-400 uppercase tracking-wide">
+            Waardepropositie & Toekomstvisie
           </span>
           <h2 className="text-xl sm:text-2xl font-bold font-display mt-1">
-            Waarom zorginstellingen investeren in ZorgKompas
+            Waarom zorginstellingen investeren in PraktijkKompas
           </h2>
-          <p className="text-xs text-slate-300 mt-1 max-w-xl leading-relaxed">
-            Zorgorganisaties kampen met hoge personeelsverloop, nachtdienststress en overbelaste artsenposten. ZorgKompas levert meetbare tijdwinst en kwaliteitsborging op de vloer.
+          <p className="text-xs text-slate-300 mt-2 max-w-xl leading-relaxed">
+            Zorgorganisaties kampen met hoge personeelsverloop, nachtdienststress en overbelaste artsenposten. PraktijkKompas levert meetbare rust, structuur en kwaliteitsborging op de werkvloer.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div className="p-4 bg-white/10 rounded-2xl border border-white/10 space-y-1">
-            <h4 className="font-bold text-teal-300 text-sm">1. Foutreductie in Overdracht</h4>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div className="p-5 bg-white/5 rounded-2xl border border-white/10 space-y-1.5">
+            <h4 className="font-bold text-blue-300 text-sm">1. Foutreductie in Overdracht</h4>
             <p className="text-slate-300 leading-relaxed">
               Gestructureerde SBAR en SOAP voorkomen vergeten vitale parameters bij telefonisch artscontact om 03:00 uur.
             </p>
           </div>
 
-          <div className="p-4 bg-white/10 rounded-2xl border border-white/10 space-y-1">
-            <h4 className="font-bold text-teal-300 text-sm">2. V&VN Accreditatie</h4>
+          <div className="p-5 bg-white/5 rounded-2xl border border-white/10 space-y-1.5">
+            <h4 className="font-bold text-blue-300 text-sm">2. Beoogde V&VN-accreditatie</h4>
             <p className="text-slate-300 leading-relaxed">
-              Zorgmedewerkers bouwen continu geaccrediteerde deskundigheidspunten op via casussen en triage-simulaties.
+              Onderdeel van de roadmap: zorgmedewerkers bouwen continu geaccrediteerde deskundigheidspunten op via casussen en triage-simulaties.
             </p>
           </div>
 
-          <div className="p-4 bg-white/10 rounded-2xl border border-white/10 space-y-1">
-            <h4 className="font-bold text-teal-300 text-sm">3. ECD & HIS Koppeling</h4>
+          <div className="p-5 bg-white/5 rounded-2xl border border-white/10 space-y-1.5">
+            <h4 className="font-bold text-blue-300 text-sm">3. ECD & HIS Roadmap</h4>
             <p className="text-slate-300 leading-relaxed">
-              Jaarabonnement per zorgorganisatie (SaaS-licentie per medewerker) met directe API-koppeling naar Nedap Ons en HiX.
+              Toekomstige mogelijkheid voor ECD/HIS-integraties, bijvoorbeeld Nedap Ons en HiX.
             </p>
           </div>
         </div>

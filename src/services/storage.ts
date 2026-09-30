@@ -95,7 +95,10 @@ export const DEFAULT_SIGNALING_PLAN: SignalingPlan = {
 
 export const StorageService = {
   getUserRole(): UserRole {
-    return (localStorage.getItem(ROLE_STORAGE_KEY) as UserRole) || 'professional';
+    const role = localStorage.getItem(ROLE_STORAGE_KEY);
+    if (role === 'client') return 'student';
+    if (role === 'student' || role === 'professional') return role;
+    return 'professional';
   },
 
   setUserRole(role: UserRole): void {

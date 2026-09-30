@@ -17,7 +17,8 @@ import {
   RotateCcw, 
   Pill, 
   ExternalLink,
-  ArrowRight
+  ArrowRight,
+  HelpCircle
 } from 'lucide-react';
 import { SOMATIC_TRIAGE_TOPICS } from '../../data/somaticTriage';
 import { SomaticTriageTopic, UrgencyLevel, CareSector } from '../../types';
@@ -49,6 +50,7 @@ export const SomaticTriageFlow: React.FC<SomaticTriageFlowProps> = ({
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState<number | null>(null);
   const [givenAnswers, setGivenAnswers] = useState<{ question: string; answerText: string; urgency: UrgencyLevel }[]>([]);
   const [triageFinished, setTriageFinished] = useState(false);
+  const [showWhyReasoning, setShowWhyReasoning] = useState(false);
 
   // Medication high risk check
   const [highRiskMeds, setHighRiskMeds] = useState<string[]>([]);
@@ -317,6 +319,73 @@ export const SomaticTriageFlow: React.FC<SomaticTriageFlowProps> = ({
             )}
           </div>
 
+          {/* Waarom krijg ik dit advies? (Herleidbare Redenering per Beslissing) */}
+          <div className="space-y-3">
+            <button
+              type="button"
+              onClick={() => setShowWhyReasoning(!showWhyReasoning)}
+              className="w-full py-3 px-4 bg-blue-50/80 hover:bg-blue-100/70 text-blue-900 rounded-2xl text-xs font-bold flex items-center justify-between transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <HelpCircle className="w-4 h-4 text-blue-600" />
+                <span>Waarom krijg ik dit advies? (Beslisonderbouwing & bron)</span>
+              </div>
+              <span className="text-blue-600 underline font-semibold">
+                {showWhyReasoning ? 'Verberg onderbouwing' : 'Toon herleidbare redenering'}
+              </span>
+            </button>
+
+            {showWhyReasoning && (
+              <div className="p-6 bg-slate-50/90 rounded-2xl border-0 space-y-4 text-xs text-slate-800 animate-in fade-in">
+                <div className="border-b border-slate-200/80 pb-3">
+                  <span className="font-bold text-slate-900 block text-sm">
+                    Herleidbare beslislogica voor urgentie: {highestUrgency}
+                  </span>
+                  <p className="text-slate-600 mt-0.5">
+                    De urgentiebepaling is direct herleidbaar naar de triagebeslisboom conform onderstaande Nederlandse zorgstandaard.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="p-3 bg-white rounded-xl shadow-2xs">
+                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Standaard:</span>
+                    <span className="font-bold text-slate-900">Nederlandse Triage Standaard (NTS) / NHG</span>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl shadow-2xs">
+                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Onderwerp:</span>
+                    <span className="font-bold text-slate-900">{selectedTopic.title}</span>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl shadow-2xs">
+                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Versie:</span>
+                    <span className="font-bold text-slate-900">2025 / NHG Standaard & NTS Protocol</span>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl shadow-2xs">
+                    <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">Beslisregel:</span>
+                    <span className="font-bold text-slate-900">
+                      {highestUrgency === 'U1' && 'Acuut bedreigde vitale functies vereisen onmiddellijke inzet van ambulance.'}
+                      {highestUrgency === 'U2' && 'Potentieel bedreigde functies / alarmsignalen vereisen fysieke artsbeoordeling binnen 1 uur.'}
+                      {highestUrgency === 'U3' && 'Dringende klacht zonder directe vitale bedreiging: beoordeling binnen enkele uren.'}
+                      {(highestUrgency === 'U4' || highestUrgency === 'U5') && 'Geen alarmsignalen: veilig verpleegkundig beleid & routinecontrole.'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 bg-white rounded-xl shadow-2xs space-y-1.5">
+                  <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">
+                    Toegepaste signalen & klinische antwoorden:
+                  </span>
+                  <ul className="list-disc pl-4 space-y-1 text-slate-700">
+                    {givenAnswers.map((ans, idx) => (
+                      <li key={idx}>
+                        <strong>{ans.question}:</strong> <span className="text-blue-900 font-medium">{ans.answerText}</span> (Urgentie: {ans.urgency})
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Given Answers Audit Trail */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wide">
@@ -368,7 +437,7 @@ export const SomaticTriageFlow: React.FC<SomaticTriageFlowProps> = ({
                 const summary = givenAnswers.map(a => `${a.question}: ${a.answerText}`).join('\n');
                 onOpenSbar(selectedTopic, highestUrgency, summary);
               }}
-              className="w-full sm:w-auto py-2.5 px-5 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+              className="w-full sm:w-auto py-2.5 px-5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer"
             >
               <FileText className="w-4 h-4" />
               <span>Genereer SBAR Overdracht voor Arts</span>

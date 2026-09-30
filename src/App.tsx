@@ -15,12 +15,13 @@ import { CaseStudyViewer } from './components/learning/CaseStudyViewer';
 import { QuizViewer } from './components/learning/QuizViewer';
 import { LearningHub } from './components/learning/LearningHub';
 import { SignalingPlanBuilder } from './components/signaling/SignalingPlanBuilder';
-import { ClientModeView } from './components/clientMode/ClientModeView';
+import { StudentModeView } from './components/studentMode/StudentModeView';
 import { AiPracticeAssistant } from './components/ai/AiPracticeAssistant';
 import { ProgressDashboard } from './components/progress/ProgressDashboard';
 import { ProfileView } from './components/profile/ProfileView';
 
-// Somatic Triage, ABCDE, Vitals, Reporting & Guidelines
+// Somatic Triage, ABCDE, Vitals, Reporting, Acute Care Hub & Guidelines
+import { AcuteCareHub } from './components/acute/AcuteCareHub';
 import { SomaticTriageFlow } from './components/triage/SomaticTriageFlow';
 import { AbcdeScanner } from './components/triage/AbcdeScanner';
 import { VitalsChecker } from './components/vitals/VitalsChecker';
@@ -228,112 +229,83 @@ export default function App() {
       {/* Main Content Viewport with generous white space */}
       <main className="flex-1 max-w-5xl w-full mx-auto px-5 sm:px-8 py-8 sm:py-10 pb-32 md:pb-20">
         
-        {/* CLIENT MODE */}
-        {role === 'client' ? (
-          <ClientModeView
-            onBackToProfessional={() => handleRoleToggle('professional')}
+        {/* 1. Subview: AI Assistant */}
+        {isAiOpen && (
+          <AiPracticeAssistant
+            onBack={() => setIsAiOpen(false)}
+            onSelectSituation={(sit) => {
+              setIsAiOpen(false);
+              handleSelectSituation(sit);
+            }}
           />
-        ) : (
-          /* PROFESSIONAL / CLINICAL VIEWS */
+        )}
+
+        {/* 2. Subview: Interactive Situation Flow (8 steps) */}
+        {!isAiOpen && activeSituation && (
+          <InteractiveSituationFlow
+            situation={activeSituation}
+            onBack={() => setActiveSituation(null)}
+            onCompleteFlow={handleCompleteSituationFlow}
+            onLaunchCase={(caseId) => {
+              const targetCase = CASE_STUDIES.find(c => c.id === caseId);
+              if (targetCase) {
+                handleSelectCase(targetCase);
+              }
+            }}
+            relatedCase={CASE_STUDIES.find(c => c.id === activeSituation.recommendedCaseId)}
+          />
+        )}
+
+        {/* 3. Subview: Interactive Case Study */}
+        {!isAiOpen && !activeSituation && activeCaseStudy && (
+          <CaseStudyViewer
+            caseStudy={activeCaseStudy}
+            onBack={() => setActiveCaseStudy(null)}
+            onCompleteCase={handleCompleteCase}
+            onNextCase={() => {
+              const currentIndex = CASE_STUDIES.findIndex(c => c.id === activeCaseStudy.id);
+              const nextCase = CASE_STUDIES[(currentIndex + 1) % CASE_STUDIES.length];
+              setActiveCaseStudy(nextCase);
+            }}
+          />
+        )}
+
+        {/* 4. Subview: Interactive Quiz */}
+        {!isAiOpen && !activeSituation && !activeCaseStudy && activeQuiz && (
+          <QuizViewer
+            quiz={activeQuiz}
+            onBack={() => setActiveQuiz(null)}
+            onCompleteQuiz={handleCompleteQuiz}
+          />
+        )}
+
+        {/* PRIMARY TABS (when no subview is open) */}
+        {!isAiOpen && !activeSituation && !activeCaseStudy && !activeQuiz && (
           <>
-            {/* 1. Subview: AI Assistant */}
-            {isAiOpen && (
-              <AiPracticeAssistant
-                onBack={() => setIsAiOpen(false)}
-                onSelectSituation={(sit) => {
-                  setIsAiOpen(false);
-                  handleSelectSituation(sit);
-                }}
-              />
+            {/* 1. Overzicht: Home Dashboard voor Professionals of StudentModeView voor Studenten */}
+            {activeTab === 'home' && (
+              role === 'student' ? (
+                <StudentModeView
+                  onBackToProfessional={() => handleRoleToggle('professional')}
+                  onNavigateTab={handleNavigateTab}
+                  progress={progress}
+                  onProgressUpdate={(newProg) => setProgress(newProg)}
+                />
+              ) : (
+                <HomeDashboard
+                  onNavigateTab={handleNavigateTab}
+                  onSelectSituation={handleSelectSituation}
+                  onSelectCase={handleSelectCase}
+                  onOpenAiAssistant={() => setIsAiOpen(true)}
+                  onRoleToggle={handleRoleToggle}
+                  progress={progress}
+                  activeSector={activeSector}
+                  onSectorChange={setActiveSector}
+                />
+              )
             )}
 
-            {/* 2. Subview: Interactive Situation Flow (8 steps) */}
-            {!isAiOpen && activeSituation && (
-              <InteractiveSituationFlow
-                situation={activeSituation}
-                onBack={() => setActiveSituation(null)}
-                onCompleteFlow={handleCompleteSituationFlow}
-                onLaunchCase={(caseId) => {
-                  const targetCase = CASE_STUDIES.find(c => c.id === caseId);
-                  if (targetCase) {
-                    handleSelectCase(targetCase);
-                  }
-                }}
-                relatedCase={CASE_STUDIES.find(c => c.id === activeSituation.recommendedCaseId)}
-              />
-            )}
-
-            {/* 3. Subview: Interactive Case Study */}
-            {!isAiOpen && !activeSituation && activeCaseStudy && (
-              <CaseStudyViewer
-                caseStudy={activeCaseStudy}
-                onBack={() => setActiveCaseStudy(null)}
-                onCompleteCase={handleCompleteCase}
-                onNextCase={() => {
-                  const currentIndex = CASE_STUDIES.findIndex(c => c.id === activeCaseStudy.id);
-                  const nextCase = CASE_STUDIES[(currentIndex + 1) % CASE_STUDIES.length];
-                  setActiveCaseStudy(nextCase);
-                }}
-              />
-            )}
-
-            {/* 4. Subview: Interactive Quiz */}
-            {!isAiOpen && !activeSituation && !activeCaseStudy && activeQuiz && (
-              <QuizViewer
-                quiz={activeQuiz}
-                onBack={() => setActiveQuiz(null)}
-                onCompleteQuiz={handleCompleteQuiz}
-              />
-            )}
-
-            {/* PRIMARY TABS (when no subview is open) */}
-            {!isAiOpen && !activeSituation && !activeCaseStudy && !activeQuiz && (
-              <>
-                {/* 1. Home Dashboard */}
-                {activeTab === 'home' && (
-                  <HomeDashboard
-                    onNavigateTab={handleNavigateTab}
-                    onSelectSituation={handleSelectSituation}
-                    onSelectCase={handleSelectCase}
-                    onOpenAiAssistant={() => setIsAiOpen(true)}
-                    onRoleToggle={handleRoleToggle}
-                    progress={progress}
-                    activeSector={activeSector}
-                    onSectorChange={setActiveSector}
-                  />
-                )}
-
-                {/* 2. Somatische Symptoomtriage (Beslisbomen) */}
-                {activeTab === 'triage' && (
-                  <SomaticTriageFlow
-                    onBack={() => handleNavigateTab('home')}
-                    onOpenSbar={handleTriageExportToSbar}
-                    activeSector={activeSector}
-                  />
-                )}
-
-                {/* 3. ABCDE & Meetwaarden */}
-                {activeTab === 'abcde' && (
-                  <div className="space-y-8">
-                    <AbcdeScanner
-                      onExportToSbar={handleAbcdeExportToSbar}
-                    />
-                    <div className="pt-6 border-t border-slate-200">
-                      <VitalsChecker
-                        onExportToSbar={handleVitalsExportToSbar}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* 4. Vitals direct */}
-                {activeTab === 'vitals' && (
-                  <VitalsChecker
-                    onExportToSbar={handleVitalsExportToSbar}
-                  />
-                )}
-
-                {/* 5. Gedrag & GGZ Situaties */}
+                {/* 2. Praktijkcoach: Gedrag, GGZ, LVB & Begeleiding */}
                 {activeTab === 'situations' && (
                   <SituationPicker
                     onSelectSituation={handleSelectSituation}
@@ -341,16 +313,28 @@ export default function App() {
                   />
                 )}
 
-                {/* 6. Rapportage: SBAR, SOAP & TIME */}
+                {/* 3. Acute Zorg (Symptoomtriage, ABCDE & Vitale Functies samengevoegd) */}
+                {(activeTab === 'acute' || activeTab === 'triage' || activeTab === 'abcde' || activeTab === 'vitals') && (
+                  <AcuteCareHub
+                    activeSector={activeSector}
+                    onOpenSbarFromTriage={handleTriageExportToSbar}
+                    onExportAbcdeToSbar={handleAbcdeExportToSbar}
+                    onExportVitalsToSbar={handleVitalsExportToSbar}
+                    initialSubTab={activeTab === 'abcde' ? 'abcde' : activeTab === 'vitals' ? 'vitals' : 'triage'}
+                  />
+                )}
+
+                {/* 4. Rapportage: SBAR, SOAP & TIME */}
                 {activeTab === 'reporting' && (
                   <ClinicalReportingGenerator
                     initialSbar={sbarPreload}
                     vitalsSummary={sbarPreload.vitalsSummary}
                     initialUrgency={sbarPreload.urgency || 'U2'}
+                    isStudentMode={role === 'student'}
                   />
                 )}
 
-                {/* 7. Leren & Casussen */}
+                {/* 5. Leren: Casussen, quizzen & kennisroutes */}
                 {activeTab === 'learn' && (
                   <LearningHub
                     progress={progress}
@@ -359,12 +343,12 @@ export default function App() {
                   />
                 )}
 
-                {/* 8. Persoonlijk Signaleringsplan */}
+                {/* 6. Persoonlijk Signaleringsplan */}
                 {activeTab === 'signaling' && (
                   <SignalingPlanBuilder />
                 )}
 
-                {/* 9. Voortgang & Gamification */}
+                {/* 7. Voortgang & Gamification */}
                 {activeTab === 'progress' && (
                   <ProgressDashboard
                     progress={progress}
@@ -375,12 +359,12 @@ export default function App() {
                   />
                 )}
 
-                {/* 10. Richtlijnen, AI-veiligheid & Verdienmodel */}
+                {/* 8. Richtlijnen, AI-veiligheid & Verdienmodel */}
                 {activeTab === 'sources' && (
                   <SourcesViewer />
                 )}
 
-                {/* 11. Gebruikersprofiel & Instellingen */}
+                {/* 9. Gebruikersprofiel & Instellingen */}
                 {activeTab === 'profile' && (
                   <ProfileView
                     currentRole={role}
@@ -391,8 +375,6 @@ export default function App() {
                 )}
               </>
             )}
-          </>
-        )}
 
       </main>
 
@@ -400,9 +382,6 @@ export default function App() {
       <BottomNav
         activeTab={activeTab}
         onTabChange={(tab) => {
-          if (role === 'client') {
-            setRole('professional');
-          }
           handleNavigateTab(tab);
         }}
       />

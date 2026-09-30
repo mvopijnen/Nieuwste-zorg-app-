@@ -37,10 +37,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     <div className="max-w-3xl mx-auto space-y-6">
       
       {/* Profile Header Card */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs">
+      <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-[0_4px_25px_rgba(15,23,42,0.03)] border-0">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-teal-600 text-white flex items-center justify-center font-bold text-2xl font-display shadow-md">
+            <div className="w-16 h-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-2xl font-display shadow-md">
               {userName.charAt(0)}
             </div>
             <div>
@@ -48,8 +48,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 <h1 className="text-xl sm:text-2xl font-bold text-slate-900 font-display">
                   {userName}
                 </h1>
-                <span className="text-xs font-semibold bg-teal-50 text-teal-800 px-2 py-0.5 rounded border border-teal-200">
-                  {currentRole === 'professional' ? 'Professional' : 'Cliënt'}
+                <span className="text-xs font-semibold bg-blue-50 text-blue-800 px-2.5 py-0.5 rounded-full">
+                  {currentRole === 'professional' ? 'Professional' : 'Student / Leerling'}
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-1">
@@ -60,7 +60,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
           <button
             onClick={handleSave}
-            className="py-2.5 px-4 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
+            className="py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
           >
             <Check className="w-4 h-4" />
             <span>Wijzigingen opslaan</span>
@@ -132,7 +132,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   onClick={() => onRoleToggle('professional')}
                   className={`p-2.5 rounded-xl border text-center font-semibold transition-all cursor-pointer ${
                     currentRole === 'professional'
-                      ? 'border-teal-600 bg-teal-50 text-teal-900 ring-1 ring-teal-600'
+                      ? 'border-blue-600 bg-blue-50 text-blue-900 ring-1 ring-blue-600'
                       : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                   }`}
                 >
@@ -140,14 +140,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 </button>
                 <button
                   type="button"
-                  onClick={() => onRoleToggle('client')}
+                  onClick={() => onRoleToggle('student')}
                   className={`p-2.5 rounded-xl border text-center font-semibold transition-all cursor-pointer ${
-                    currentRole === 'client'
-                      ? 'border-rose-500 bg-rose-50 text-rose-900 ring-1 ring-rose-500'
+                    currentRole === 'student'
+                      ? 'border-blue-600 bg-blue-50 text-blue-900 ring-1 ring-blue-600'
                       : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                   }`}
                 >
-                  Cliëntmodus
+                  Student / Leerling
                 </button>
               </div>
             </div>

@@ -11,7 +11,7 @@ import {
   BookOpen,
   Sparkles
 } from 'lucide-react';
-import { Situation, UserProgressState, CaseStudy, CareSector } from '../../types';
+import { Situation, UserProgressState, CaseStudy, CareSector, UserRole } from '../../types';
 import { CASE_STUDIES } from '../../data/cases';
 import { SOMATIC_TRIAGE_TOPICS } from '../../data/somaticTriage';
 
@@ -20,7 +20,7 @@ interface HomeDashboardProps {
   onSelectSituation: (situation: Situation) => void;
   onSelectCase: (caseStudy: CaseStudy) => void;
   onOpenAiAssistant: () => void;
-  onRoleToggle: (role: 'professional' | 'client') => void;
+  onRoleToggle: (role: UserRole) => void;
   progress: UserProgressState;
   activeSector: CareSector;
   onSectorChange: (sector: CareSector) => void;
@@ -46,36 +46,36 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   // Core 4 Pillars with serene blue styling and generous spacing
   const corePillars = [
     {
-      id: 'triage',
-      title: 'Symptomen & Triage',
-      description: 'Systematisch uitvragen bij benauwdheid, koorts, buikpijn of delier met NTS-urgentiebepaling.',
-      icon: Stethoscope,
-      action: () => onNavigateTab('triage'),
-      linkText: 'Start triage'
-    },
-    {
-      id: 'abcde',
-      title: 'ABCDE & Meetwaarden',
-      description: 'Bloeddruk, pols, saturatie, ademhaling en temperatuur met automatische EWS-score.',
-      icon: Activity,
-      action: () => onNavigateTab('abcde'),
-      linkText: 'Naar meetwaarden'
-    },
-    {
       id: 'situations',
-      title: 'Gedrag & De-escalatie',
-      description: 'Handelingsperspectief bij overprikkeling, oplopende spanning, stemmen horen en zorgweigering.',
+      title: 'Praktijkcoach',
+      description: 'Gedrag, GGZ, LVB & begeleiding. Direct de-escaleren, overprikkeling duiden en handelingsopties.',
       icon: ZapOff,
       action: () => onNavigateTab('situations'),
-      linkText: 'Bekijk situaties'
+      linkText: 'Naar Praktijkcoach'
+    },
+    {
+      id: 'acute',
+      title: 'Acute Zorg',
+      description: 'Symptoomtriage, ABCDE-methodiek en vitale functies (EWS-score) in één logisch zorgpad.',
+      icon: Stethoscope,
+      action: () => onNavigateTab('acute'),
+      linkText: 'Start acute beoordeling'
     },
     {
       id: 'reporting',
-      title: 'SBAR & Overdracht',
+      title: 'Rapportage',
       description: 'Medisch gestructureerde overdracht conform SBAR voor artsenoverleg of SOAP voor het ECD.',
       icon: FileText,
       action: () => onNavigateTab('reporting'),
       linkText: 'Stel overdracht op'
+    },
+    {
+      id: 'learn',
+      title: 'Leren & Oefenen',
+      description: 'Fictieve oefencasussen, interactieve quizzen en klinisch redeneren voor studenten en professionals.',
+      icon: BookOpen,
+      action: () => onNavigateTab('learn'),
+      linkText: 'Oefen casuïstiek'
     }
   ];
 

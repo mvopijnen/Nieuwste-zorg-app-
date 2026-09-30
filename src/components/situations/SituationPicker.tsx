@@ -77,13 +77,13 @@ export const SituationPicker: React.FC<SituationPickerProps> = ({
         <div className="relative z-10 max-w-2xl">
           <div className="flex items-center gap-2 text-xs font-semibold text-blue-800 mb-2">
             <span className="w-2 h-2 rounded-full bg-blue-600" />
-            <span>Praktijkcoach & Situatiekiezer</span>
+            <span>Gedrag, GGZ, LVB & begeleiding</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight font-display leading-snug">
-            Wat speelt er en wat kun je nu doen?
+            Praktijkcoach
           </h1>
           <p className="text-slate-600 text-sm mt-2 leading-relaxed">
-            Kies hieronder een praktijksituatie om direct stap voor stap signalen te duiden, de-escalerende stappen te ontdekken en valkuilen te vermijden.
+            Wat speelt er en wat kun je nu doen? Direct handelingsperspectief bij overprikkeling, oplopende spanning, stemmen horen en escalatie in de dagelijkse zorg.
           </p>
 
           {/* Search bar */}

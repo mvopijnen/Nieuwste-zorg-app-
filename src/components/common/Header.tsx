@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Compass, UserCheck, Heart, AlertTriangle, PhoneCall, X, User } from 'lucide-react';
+import { Compass, UserCheck, GraduationCap, AlertTriangle, PhoneCall, X, User } from 'lucide-react';
 import { UserRole, UserProgressState } from '../../types';
 
 interface HeaderProps {
@@ -21,11 +21,10 @@ export const Header: React.FC<HeaderProps> = ({
 
   const navItems = [
     { id: 'home', label: 'Overzicht' },
-    { id: 'triage', label: 'Symptoomtriage' },
-    { id: 'abcde', label: 'ABCDE & Vitals' },
-    { id: 'situations', label: 'Gedrag & GGZ' },
+    { id: 'situations', label: 'Praktijkcoach' },
+    { id: 'acute', label: 'Acute zorg' },
     { id: 'reporting', label: 'Rapportage' },
-    { id: 'learn', label: 'Casuïstiek' }
+    { id: 'learn', label: 'Leren' }
   ];
 
   return (
@@ -75,7 +74,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Rechter acties: Rustig en zonder schreeuwende kleuren */}
           <div className="flex items-center gap-2 shrink-0">
 
-            {/* Moduswissel (Zorgverlener / Cliënt) */}
+            {/* Moduswissel (Professional / Student) */}
             <div className="flex items-center p-0.5 bg-slate-100 rounded-lg border border-slate-200/80 text-xs">
               <button
                 onClick={() => onRoleToggle('professional')}
@@ -90,16 +89,16 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="hidden sm:inline">Professional</span>
               </button>
               <button
-                onClick={() => onRoleToggle('client')}
+                onClick={() => onRoleToggle('student')}
                 className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-medium text-xs transition-all cursor-pointer ${
-                  currentRole === 'client'
+                  currentRole === 'student'
                     ? 'bg-white text-blue-700 shadow-xs font-semibold'
                     : 'text-slate-500 hover:text-slate-900'
                 }`}
-                title="Vereenvoudigde cliëntmodus"
+                title="Educatieve oefen- & studentenmodule"
               >
-                <Heart className="w-3.5 h-3.5 text-blue-500" />
-                <span>Cliënt</span>
+                <GraduationCap className="w-3.5 h-3.5 text-blue-600" />
+                <span>Student</span>
               </button>
             </div>
 

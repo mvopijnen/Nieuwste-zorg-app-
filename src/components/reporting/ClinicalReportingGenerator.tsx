@@ -17,51 +17,98 @@ interface ClinicalReportingGeneratorProps {
   vitalsData?: VitalParameters;
   vitalsSummary?: string;
   initialUrgency?: UrgencyLevel;
+  isStudentMode?: boolean;
 }
 
 export const ClinicalReportingGenerator: React.FC<ClinicalReportingGeneratorProps> = ({
   initialSbar,
   vitalsData,
   vitalsSummary,
-  initialUrgency = 'U2'
+  initialUrgency = 'U2',
+  isStudentMode = false
 }) => {
   const [activeTab, setActiveTab] = useState<'sbar' | 'soap' | 'time'>('sbar');
   const [copied, setCopied] = useState(false);
+  
+  // Has preloaded data from actual clinical workflow (triage/vitals)
+  const hasPreloadedData = !!(initialSbar?.situation || initialSbar?.assessment || vitalsSummary);
+
+  // Is using fictitious demo case data
+  const [isDemoData, setIsDemoData] = useState<boolean>(!hasPreloadedData && isStudentMode);
 
   // SBAR fields
-  const [clientName, setClientName] = useState('Dhr. / Mw. [Achternaam]');
-  const [dob, setDob] = useState('01-01-1950');
-  const [location, setLocation] = useState('Locatie Berkenhof / Woning 4');
+  const [clientName, setClientName] = useState(() => (isDemoData ? 'Dhr. J. de Vries (Fictief)' : ''));
+  const [dob, setDob] = useState(() => (isDemoData ? '14-03-1952' : ''));
+  const [location, setLocation] = useState(() => (isDemoData ? 'Woning 4 / Kamer 12' : ''));
   const [callerName, setCallerName] = useState('Zorgprofessional dienstdoend');
   
-  const [situation, setSituation] = useState(
+  const [situation, setSituation] = useState(() => (
     initialSbar?.situation || 
-    'Ik bel voor dhr./mw. vanwege een acute toename van benauwdheid en duizeligheid sinds 02:30 uur vannacht.'
-  );
-  const [background, setBackground] = useState(
+    (isDemoData ? 'Ik bel voor dhr. de Vries vanwege een acute toename van benauwdheid en piepende ademhaling sinds 02:30 uur.' : '')
+  ));
+  const [background, setBackground] = useState(() => (
     initialSbar?.background || 
-    'Bekend met COPD Gold III en hypertensie. Reanimatiebeleid: Wel reanimeren / Geen IC-opname. Allergie: Geen.'
-  );
-  const [assessment, setAssessment] = useState(
+    (isDemoData ? 'Bekend met COPD Gold III en hypertensie. Reanimatiebeleid: Wel reanimeren / Geen IC-opname. Allergie: Geen.' : '')
+  ));
+  const [assessment, setAssessment] = useState(() => (
     vitalsSummary || 
-    'RR: 105/65 mmHg | Pols: 112/min | SpO2: 89% (zonder O2) | Temp: 38.6°C | AF: 26/min | AVPU: Alert maar angstig en kortademig.'
-  );
-  const [recommendation, setRecommendation] = useState(
+    initialSbar?.assessment || 
+    (isDemoData ? 'RR: 105/65 mmHg | Pols: 112/min | SpO2: 89% (zonder O2) | Temp: 38.6°C | AF: 26/min | AVPU: Alert maar angstig en kortademig.' : '')
+  ));
+  const [recommendation, setRecommendation] = useState(() => (
     initialSbar?.recommendation || 
-    'Gezien de desaturatie en koorts vraag ik u om deze cliënt binnen 1 uur ter plaatse te beoordelen en beleid af te spreken voor zuurstof en antibiotica.'
-  );
+    (isDemoData ? 'Gezien de desaturatie en koorts vraag ik u om deze cliënt binnen 1 uur ter plaatse te beoordelen en beleid af te spreken voor zuurstof en antibiotica.' : '')
+  ));
 
   // SOAP fields
-  const [soapS, setSoapS] = useState('Cliënt meldt: "Ik krijg geen lucht meer en voel me heel slap in de benen."');
-  const [soapO, setSoapO] = useState('SpO2 89%, pols 112 regulair, temp 38.6°C rectaal. Gebruikt hulpademhalingsspieren bij praten. Hoest taai wit sputum op.');
-  const [soapA, setSoapA] = useState('Acuut respiratoir probleem, vermoeden lageluchtweginfectie / pneumonie bij bekende COPD.');
-  const [soapP, setSoapP] = useState('Dienstdoende arts gebeld via SBAR. Zuurstof gestart op 1.5 L/min. Cliënt halfzittend geïnstalleerd. Ieder kwartier vitale functies herhalen.');
+  const [soapS, setSoapS] = useState(() => (isDemoData ? 'Cliënt meldt: "Ik krijg geen lucht meer en voel me heel slap in de benen."' : ''));
+  const [soapO, setSoapO] = useState(() => (isDemoData ? 'SpO2 89%, pols 112 regulair, temp 38.6°C rectaal. Gebruikt hulpademhalingsspieren bij praten. Hoest taai wit sputum op.' : ''));
+  const [soapA, setSoapA] = useState(() => (isDemoData ? 'Acuut respiratoir probleem, vermoeden lageluchtweginfectie / pneumonie bij bekende COPD.' : ''));
+  const [soapP, setSoapP] = useState(() => (isDemoData ? 'Dienstdoende arts gebeld via SBAR. Zuurstof gestart op 1.5 L/min. Cliënt halfzittend geïnstalleerd. Ieder kwartier vitale functies herhalen.' : ''));
 
   // TIME fields
-  const [timeT, setTimeT] = useState('Geel beslag (fibrineus) circa 40%, rood granulatieweefsel 60%. Geen zwart necrotisch weefsel.');
-  const [timeI, setTimeI] = useState('Roodheid wondrand < 1 cm, wond voelt warm aan. Geen onaangename geur. Lichaamstemperatuur 37.1°C.');
-  const [timeM, setTimeM] = useState('Wond is matig vochtig. Verbandgaas voor de helft verzadigd met sereus exsudaat.');
-  const [timeE, setTimeE] = useState('Wondranden zijn vlak en rustig, geen maceratie of verweking.');
+  const [timeT, setTimeT] = useState(() => (isDemoData ? 'Geel beslag (fibrineus) circa 40%, rood granulatieweefsel 60%. Geen zwart necrotisch weefsel.' : ''));
+  const [timeI, setTimeI] = useState(() => (isDemoData ? 'Roodheid wondrand < 1 cm, wond voelt warm aan. Geen onaangename geur. Lichaamstemperatuur 37.1°C.' : ''));
+  const [timeM, setTimeM] = useState(() => (isDemoData ? 'Wond is matig vochtig. Verbandgaas voor de helft verzadigd met sereus exsudaat.' : ''));
+  const [timeE, setTimeE] = useState(() => (isDemoData ? 'Wondranden zijn vlak en rustig, geen maceratie of verweking.' : ''));
+
+  const handleLoadDemoCase = () => {
+    setIsDemoData(true);
+    setClientName('Dhr. J. de Vries (Fictief)');
+    setDob('14-03-1952');
+    setLocation('Woning 4 / Kamer 12');
+    setSituation('Ik bel voor dhr. de Vries vanwege een acute toename van benauwdheid en piepende ademhaling sinds 02:30 uur.');
+    setBackground('Bekend met COPD Gold III en hypertensie. Reanimatiebeleid: Wel reanimeren / Geen IC-opname. Allergie: Geen.');
+    setAssessment('RR: 105/65 mmHg | Pols: 112/min | SpO2: 89% (zonder O2) | Temp: 38.6°C | AF: 26/min | AVPU: Alert maar angstig en kortademig.');
+    setRecommendation('Gezien de desaturatie en koorts vraag ik u om deze cliënt binnen 1 uur ter plaatse te beoordelen en beleid af te spreken voor zuurstof en antibiotica.');
+    setSoapS('Cliënt meldt: "Ik krijg geen lucht meer en voel me heel slap in de benen."');
+    setSoapO('SpO2 89%, pols 112 regulair, temp 38.6°C rectaal. Gebruikt hulpademhalingsspieren bij praten. Hoest taai wit sputum op.');
+    setSoapA('Acuut respiratoir probleem, vermoeden lageluchtweginfectie / pneumonie bij bekende COPD.');
+    setSoapP('Dienstdoende arts gebeld via SBAR. Zuurstof gestart op 1.5 L/min. Cliënt halfzittend geïnstalleerd. Ieder kwartier vitale functies herhalen.');
+    setTimeT('Geel beslag (fibrineus) circa 40%, rood granulatieweefsel 60%. Geen zwart necrotisch weefsel.');
+    setTimeI('Roodheid wondrand < 1 cm, wond voelt warm aan. Geen onaangename geur. Lichaamstemperatuur 37.1°C.');
+    setTimeM('Wond is matig vochtig. Verbandgaas voor de helft verzadigd met sereus exsudaat.');
+    setTimeE('Wondranden zijn vlak en rustig, geen maceratie of verweking.');
+  };
+
+  const handleStartEmpty = () => {
+    setIsDemoData(false);
+    setClientName('');
+    setDob('');
+    setLocation('');
+    setSituation('');
+    setBackground('');
+    setAssessment(vitalsSummary || initialSbar?.assessment || '');
+    setRecommendation('');
+    setSoapS('');
+    setSoapO('');
+    setSoapA('');
+    setSoapP('');
+    setTimeT('');
+    setTimeI('');
+    setTimeM('');
+    setTimeE('');
+  };
 
   const buildCompleteSbarText = () => {
     return `=== SBAR OVERDRACHT ARTS / HAP (Urgentie: ${initialUrgency}) ===
@@ -193,6 +240,56 @@ ${timeE}
             }`}
           >
             TIME (Wondzorg)
+          </button>
+        </div>
+      </div>
+
+      {/* Demo vs Praktijk Selector Banner */}
+      <div className={`rounded-2xl p-5 border-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all ${
+        isDemoData 
+          ? 'bg-amber-50/90 text-amber-950 shadow-2xs' 
+          : 'bg-blue-50/70 text-blue-950 shadow-2xs'
+      }`}>
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className={`px-2.5 py-0.5 rounded-full font-bold text-[11px] ${
+              isDemoData ? 'bg-amber-200 text-amber-900' : 'bg-blue-200 text-blue-900'
+            }`}>
+              {isDemoData ? 'DEMO-CASUS, fictieve cliënt' : 'PRAKTIJKMODUS, actieve dienst'}
+            </span>
+            <span className="text-xs font-semibold">
+              {isDemoData ? 'Fictieve voorbeelddata geladen' : 'Klaar voor reële cliëntinvoer'}
+            </span>
+          </div>
+          <p className="text-xs text-slate-600 leading-relaxed">
+            {isDemoData 
+              ? 'Je bekijkt nu een voorbeeldcasus (COPD, benauwdheid, saturatie 89%). Klik op "Start lege rapportage" om een eigen verslag te schrijven.'
+              : 'Alle velden zijn leeggemaakt voor een actuele registratie of telefonische artsenoverdracht.'}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={handleLoadDemoCase}
+            className={`py-2 px-3.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              isDemoData
+                ? 'bg-amber-200 text-amber-900 shadow-2xs'
+                : 'bg-white hover:bg-slate-100 text-slate-700 shadow-xs'
+            }`}
+          >
+            Probeer voorbeeldcasus
+          </button>
+          <button
+            type="button"
+            onClick={handleStartEmpty}
+            className={`py-2 px-3.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              !isDemoData
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'bg-white hover:bg-slate-100 text-slate-700 shadow-xs'
+            }`}
+          >
+            Start lege rapportage
           </button>
         </div>
       </div>
